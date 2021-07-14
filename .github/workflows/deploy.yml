@@ -1,4 +1,4 @@
-name: Tests
+name: Deploy
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 jobs:
-  deploy:
+  github_pages_deploy:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -21,4 +21,8 @@ jobs:
       - name: Install dependencies
         run: yarn install
       - name: Deploy
-        run: yarn deploy
+        run: |
+          git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
+          yarn deploy -- -u "github-actions-bot <support+actions@github.com>"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
