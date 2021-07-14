@@ -1,13 +1,11 @@
-name: Tests
+name: Deploy
 
 on:
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
 
 jobs:
-  lint_and_tests:
+  github_pages_deploy:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -20,11 +18,9 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Install dependencies
         run: yarn install
-      - name: Run eslint
-        run: yarn lint
+      - name: Deploy
+        run: |
+          git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
+          yarn deploy -- -u "github-actions-bot <support+actions@github.com>"
         env:
-          CI: true
-      - name: Run unit tests
-        run: yarn test
-        env:
-          CI: true
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
