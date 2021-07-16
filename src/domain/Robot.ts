@@ -1,3 +1,4 @@
+import { RandomGenerator, RealRandomGenerator } from "./RandomGenerator";
 import { Store } from "./store";
 
 enum Location {
@@ -7,12 +8,21 @@ enum Location {
   SHOP = "shop",
 }
 
+type RobotOptions = {
+  randomGenerator?: RandomGenerator;
+};
 class Robot {
-  location: Location;
+  private location: Location;
+  private randomGenerator: RandomGenerator;
 
-  constructor(private store: Store) {
+  constructor(private store: Store, options?: RobotOptions) {
     this.location = Location.SHOP;
     this.store.robots.push(this);
+    if (options?.randomGenerator) {
+      this.randomGenerator = options.randomGenerator;
+    } else {
+      this.randomGenerator = new RealRandomGenerator();
+    }
   }
 
   moveTo(location: Location) {
@@ -43,9 +53,15 @@ class Robot {
       1,
       0
     );
-    this.store.fooBarsAmount += 1;
-    this.store.barsAmount -= 1;
-    this.store.foosAmount -= 1;
+    const isAssemblingSuccessful =
+      this.randomGenerator.randomPercentageSuccess(60);
+    if (isAssemblingSuccessful) {
+      this.store.fooBarsAmount += 1;
+      this.store.barsAmount -= 1;
+      this.store.foosAmount -= 1;
+    } else {
+      this.store.foosAmount -= 1;
+    }
   }
 
   buyRobot() {
