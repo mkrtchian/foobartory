@@ -13,3 +13,15 @@ it("returns false for randomPercentageSuccess with 0%", () => {
     expect(generator.randomPercentageSuccess(0)).toBeFalsy();
   }
 });
+
+it("throws an error for randomPercentageSuccess not a valid percentage", () => {
+  const generator = new RealRandomGenerator();
+  function negativeNumber() {
+    generator.randomPercentageSuccess(-1);
+  }
+  expect(negativeNumber).toThrow();
+  function tooBigNumber() {
+    generator.randomPercentageSuccess(101);
+  }
+  expect(tooBigNumber).toThrow();
+});
