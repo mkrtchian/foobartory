@@ -1,8 +1,8 @@
-interface Timer {
+interface DateTime {
   getCurrentTime(): number;
 }
 
-class FakeTimer implements Timer {
+class FakeDateTime implements DateTime {
   constructor(private time: number = 0) {}
   advance(miliseconds: number) {
     this.time += miliseconds;
@@ -13,11 +13,11 @@ class FakeTimer implements Timer {
   }
 }
 
-class RealTimer implements Timer {
+class RealDateTime implements DateTime {
   getCurrentTime(): number {
     return Date.now();
   }
 }
 
-export { FakeTimer, RealTimer };
-export type { Timer };
+export { FakeDateTime, RealDateTime };
+export type { DateTime };

@@ -50,16 +50,24 @@ class Robot {
    */
   tick(currentTime: number) {
     if (this.actionStartTime !== null) {
-      const actionDuration = currentTime - this.actionStartTime;
-      if (actionDuration >= this.action.getTotalDuration()) {
+      const actionCurrentDuration = currentTime - this.actionStartTime;
+      let actionTotalDuration: number;
+      if ("randomBetween" in this.action) {
+        actionTotalDuration = this.randomGenerator.randomBetweenTwoValues(
+          ...this.action.randomBetween
+        );
+      } else {
+        actionTotalDuration = this.action.totalDuration;
+      }
+      if (actionCurrentDuration >= actionTotalDuration) {
         this._endAction();
       }
     }
   }
 
   _endAction() {
-    switch (this.action) {
-      case MOVING: {
+    switch (this.action.actionType) {
+      case MOVING.actionType: {
         if (this.nextLocation) {
           this._moveTo(this.nextLocation);
         } else {
@@ -69,33 +77,35 @@ class Robot {
         }
         break;
       }
-      case MINING_FOO: {
+      case MINING_FOO.actionType: {
         this._mineFoo();
         break;
       }
-      case MINING_BAR: {
+      case MINING_BAR.actionType: {
         this._mineBar();
         break;
       }
-      case ASSEMBLING: {
+      case ASSEMBLING.actionType: {
         this._assemble();
         break;
       }
-      case BUYING: {
+      case BUYING.actionType: {
         this._buyRobot();
         break;
       }
       default: {
         throw new Error(
-          "There is a start time defined for an action, but the action of the robot is incorrect."
+          `There is a start time defined for an action, but the action of the robot is incorrect (${this.action.actionType}).`
         );
       }
     }
     this.action = WAITING;
+    this.actionStartTime = null;
   }
 
   private _moveTo(location: Location) {
     this.location = location;
+    this.nextLocation = null;
   }
 
   private _mineFoo() {
