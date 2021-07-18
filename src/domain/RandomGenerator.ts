@@ -65,12 +65,14 @@ class RealRandomGenerator implements RandomGenerator {
     const weights = Array.from(values.values());
     const negativeWeight = weights.some((x) => x < 0);
     if (negativeWeight) {
-      throw new Error(`Negative weights are not allowed. Weights: ${weights}`);
+      const entries = Array.from(values.entries());
+      throw new Error(`Negative weights are not allowed. Entries: ${entries}`);
     }
     const onlyZeroWeights = weights.every((x) => x === 0);
     if (onlyZeroWeights) {
+      const entries = Array.from(values.entries());
       throw new Error(
-        `At least one of the weights has to be > 0. Weights: ${weights}`
+        `At least one of the weights has to be > 0. Entries: ${entries}`
       );
     }
   }

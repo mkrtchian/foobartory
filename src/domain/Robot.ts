@@ -25,6 +25,13 @@ type RobotOptions = {
   randomGenerator?: RandomGenerator;
   initialLocation?: Location;
 };
+
+/**
+ * The robot is the main character. It does nothing by itself except
+ * finishing the execution of the actions it was asked to start.
+ * To make it finish its actions, it needs to get regularly its method
+ * tick() called with the current time.
+ */
 class Robot {
   private location: Location;
   private action: Action;
@@ -126,16 +133,12 @@ class Robot {
       this.randomGenerator.randomPercentageSuccess(60);
     if (isAssemblingSuccessful) {
       this.store.fooBarsAmount += 1;
-      this.store.barsAmount -= 1;
-      this.store.foosAmount -= 1;
     } else {
-      this.store.foosAmount -= 1;
+      this.store.barsAmount += 1;
     }
   }
 
   private _buyRobot() {
-    this.store.fooBarsAmount -= 3;
-    this.store.foosAmount -= 6;
     new Robot(this.store);
   }
 
@@ -169,8 +172,11 @@ class Robot {
       "To create a foobar the robot needs one foo and one bar",
       ASSEMBLING_NEEDED_RESSOURCES
     );
+
     this.action = ASSEMBLING;
     this.actionStartTime = currentTime;
+    this.store.barsAmount -= 1;
+    this.store.foosAmount -= 1;
   }
 
   startBuyingRobot(currentTime: number) {
@@ -182,6 +188,8 @@ class Robot {
     );
     this.action = BUYING_ROBOT;
     this.actionStartTime = currentTime;
+    this.store.fooBarsAmount -= 3;
+    this.store.foosAmount -= 6;
   }
 
   private _checkLocation(location: Location) {

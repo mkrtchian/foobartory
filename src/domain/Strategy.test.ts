@@ -74,6 +74,10 @@ describe("Automatic behavior (no manual next move)", () => {
 
     it(`when decided to move, it moves robot to a specific direction influenced by
     the chosen location weights`, () => {
+      strategy = new BasicStrategy({
+        randomGenerator: new RealRandomGenerator(),
+      });
+      strategy.setAutomaticMovementProbability(100);
       strategy.setLocationWeight(Location.FOO_MINE, 0);
       strategy.setLocationWeight(Location.BAR_MINE, 1);
       strategy.setLocationWeight(Location.ASSEMBLING_FACTORY, 0);
@@ -82,6 +86,20 @@ describe("Automatic behavior (no manual next move)", () => {
       robot.setKeepLocation(true);
       strategy.actOnOneFrame(5000, store);
       expect(robot.getLocation()).toEqual(Location.BAR_MINE);
+    });
+
+    it(`does not move the robot if the chosen weights are all 0`, () => {
+      strategy = new BasicStrategy({
+        randomGenerator: new RealRandomGenerator(),
+      });
+      strategy.setAutomaticMovementProbability(100);
+      strategy.setLocationWeight(Location.FOO_MINE, 0);
+      strategy.setLocationWeight(Location.BAR_MINE, 0);
+      strategy.setLocationWeight(Location.ASSEMBLING_FACTORY, 0);
+      strategy.setLocationWeight(Location.SHOP, 0);
+      strategy.actOnOneFrame(0, store);
+      strategy.actOnOneFrame(5000, store);
+      expect(robot.getLocation()).toEqual(Location.SHOP);
     });
   });
 

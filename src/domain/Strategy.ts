@@ -96,9 +96,20 @@ class BasicStrategy implements Strategy {
   private _doAutomaticMove(robot: Robot, currentTime: number) {
     const possibleLocations = new Map(this.automaticLocationProbabilities);
     possibleLocations.delete(robot.getLocation());
-    const chosenLocation = this.randomGenerator.chooseValue(possibleLocations);
-    robot.setNextLocation(chosenLocation);
-    robot.startMoving(currentTime);
+    try {
+      const chosenLocation =
+        this.randomGenerator.chooseValue(possibleLocations);
+      robot.setNextLocation(chosenLocation);
+      robot.startMoving(currentTime);
+    } catch (exception) {
+      if (
+        exception.message.includes("At least one of the weights has to be > 0")
+      ) {
+        // in case of wrong weights (eg. (0, 0, 0)), we just don't move
+      } else {
+        throw exception;
+      }
+    }
   }
 
   private _doAutomaticOtherActions(robot: Robot, currentTime: number) {

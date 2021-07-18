@@ -3,13 +3,16 @@ import { Location, Robot } from "./Robot";
 import { Store } from "./store";
 import { BasicStrategy, Strategy } from "./Strategy";
 
+const MAX_ROBOTS_LENGTH = 20;
+
 type GameOptions = {
   dateTime?: DateTime;
 };
 class Game {
-  private store: Store;
+  public store: Store;
   private dateTime: DateTime;
   private strategy: Strategy;
+  private started: boolean;
 
   constructor(strategy: Strategy, options?: GameOptions) {
     this.store = new Store();
@@ -17,13 +20,21 @@ class Game {
     this.strategy = strategy ? strategy : new BasicStrategy();
     new Robot(this.store);
     new Robot(this.store);
+    this.started = false;
   }
 
   start() {
+    this.started = true;
+    let requestId = 0;
     const nextFrame = () => {
       const now = this.dateTime.getCurrentTime();
       this.strategy.actOnOneFrame(now, this.store);
-      requestAnimationFrame(nextFrame);
+      if (this.store.robots.length < MAX_ROBOTS_LENGTH) {
+        requestId = requestAnimationFrame(nextFrame);
+      } else {
+        cancelAnimationFrame(requestId);
+        this.started = false;
+      }
     };
     nextFrame();
   }
@@ -38,6 +49,10 @@ class Game {
 
   getStrategy(): Strategy {
     return this.strategy;
+  }
+
+  getStarted(): boolean {
+    return this.started;
   }
 }
 export { Game };

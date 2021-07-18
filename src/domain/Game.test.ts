@@ -17,3 +17,24 @@ it(`moves the requested robot to the requested location`, async () => {
   await delay(50);
   expect(game.getRobotLocation(0)).toEqual(Location.FOO_MINE);
 });
+
+const maybe = process.env.INTEGRATION_TESTING ? it : it.skip;
+
+maybe(
+  `plays automatically until 20 robots are build`,
+  async () => {
+    const dateTime = new FakeDateTime();
+    const game = new Game(new BasicStrategy(), { dateTime });
+    game.start();
+    for (let i = 0; i < 12000; i++) {
+      dateTime.advance(5000);
+      await delay(10);
+      if (game.store.robots.length >= 20) {
+        break;
+      }
+    }
+    expect(game.store.robots.length).toBeGreaterThanOrEqual(20);
+    expect(game.getStarted()).toBeFalsy();
+  },
+  120000
+);
