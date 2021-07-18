@@ -1,10 +1,13 @@
 import {
   Action,
   ASSEMBLING,
-  BUYING,
+  ASSEMBLING_NEEDED_RESSOURCES,
+  BUYING_ROBOT,
+  BUYING_ROBOT_NEEDED_RESSOURCES,
   MINING_BAR,
   MINING_FOO,
   MOVING,
+  NeededRessources,
   WAITING,
 } from "./actions";
 import { RandomGenerator, RealRandomGenerator } from "./RandomGenerator";
@@ -22,15 +25,24 @@ type RobotOptions = {
   randomGenerator?: RandomGenerator;
   initialLocation?: Location;
 };
+
+/**
+ * The robot is the main character. It does nothing by itself except
+ * finishing the execution of the actions it was asked to start.
+ * To make it finish its actions, it needs to get regularly its method
+ * tick() called with the current time.
+ */
 class Robot {
   private location: Location;
   private action: Action;
   private randomGenerator: RandomGenerator;
   private nextLocation: Location | null;
   private actionStartTime: number | null;
+  private keepLocation;
 
   constructor(private store: Store, options?: RobotOptions) {
     this.nextLocation = null;
+    this.keepLocation = false;
     this.action = WAITING;
     this.actionStartTime = null;
     this.store.robots.push(this);
@@ -89,7 +101,7 @@ class Robot {
         this._assemble();
         break;
       }
-      case BUYING.actionType: {
+      case BUYING_ROBOT.actionType: {
         this._buyRobot();
         break;
       }
@@ -121,26 +133,19 @@ class Robot {
       this.randomGenerator.randomPercentageSuccess(60);
     if (isAssemblingSuccessful) {
       this.store.fooBarsAmount += 1;
-      this.store.barsAmount -= 1;
-      this.store.foosAmount -= 1;
     } else {
-      this.store.foosAmount -= 1;
+      this.store.barsAmount += 1;
     }
   }
 
   private _buyRobot() {
-    this.store.fooBarsAmount -= 3;
-    this.store.foosAmount -= 6;
     new Robot(this.store);
   }
 
   startMoving(currentTime: number) {
     this.checkAvailable();
-    if (!this.getNextLocation()) {
-      throw new Error(
-        "The robot can't start moving without next location specified."
-      );
-    }
+    this._checkLocationSpecified();
+    this._checkNotKeepingLocation();
     this.location = Location.TRANSITION;
     this.action = MOVING;
     this.actionStartTime = currentTime;
@@ -162,31 +167,32 @@ class Robot {
 
   startAssembling(currentTime: number) {
     this.checkAvailable();
-    this.checkLocation(Location.ASSEMBLING_FACTORY);
-    this.checkRessources(
+    this._checkLocation(Location.ASSEMBLING_FACTORY);
+    this._checkRessources(
       "To create a foobar the robot needs one foo and one bar",
-      1,
-      1,
-      0
+      ASSEMBLING_NEEDED_RESSOURCES
     );
+
     this.action = ASSEMBLING;
     this.actionStartTime = currentTime;
+    this.store.barsAmount -= 1;
+    this.store.foosAmount -= 1;
   }
 
   startBuyingRobot(currentTime: number) {
     this.checkAvailable();
-    this.checkLocation(Location.SHOP);
-    this.checkRessources(
+    this._checkLocation(Location.SHOP);
+    this._checkRessources(
       "To buy a new robot, the robot needs 6 foos and 3 foobars",
-      6,
-      0,
-      3
+      BUYING_ROBOT_NEEDED_RESSOURCES
     );
-    this.action = BUYING;
+    this.action = BUYING_ROBOT;
     this.actionStartTime = currentTime;
+    this.store.fooBarsAmount -= 3;
+    this.store.foosAmount -= 6;
   }
 
-  private checkLocation(location: Location) {
+  private _checkLocation(location: Location) {
     if (location !== this.location) {
       throw new Error(
         `The robot has to be in the ${location}, here it is in ${this.location}.`
@@ -194,20 +200,34 @@ class Robot {
     }
   }
 
-  private checkRessources(
+  private _checkLocationSpecified() {
+    if (!this.getNextLocation()) {
+      throw new Error(
+        "The robot can't start moving without next location specified."
+      );
+    }
+  }
+
+  private _checkNotKeepingLocation() {
+    if (this.getKeepLocation()) {
+      throw new Error(
+        "The robot can't start moving while it has been asked to keep its location."
+      );
+    }
+  }
+
+  private _checkRessources(
     errorMessageBeginning: string,
-    neededFoos: number,
-    neededBars: number,
-    neededFoobars: number
+    neededRessources: NeededRessources
   ) {
     const enoughRessources =
-      this.store.fooBarsAmount >= neededFoobars &&
-      this.store.foosAmount >= neededFoos &&
-      this.store.barsAmount >= neededBars;
+      this.store.fooBarsAmount >= neededRessources.foobars &&
+      this.store.foosAmount >= neededRessources.foos &&
+      this.store.barsAmount >= neededRessources.bars;
     if (!enoughRessources) {
       throw new Error(
         `${errorMessageBeginning}.
-        There are only ${this.store.foosAmount} foos and ${this.store.fooBarsAmount} foobars.`
+        There are only ${this.store.foosAmount} foos, ${this.store.barsAmount} bars and ${this.store.fooBarsAmount} foobars.`
       );
     }
   }
@@ -216,6 +236,23 @@ class Robot {
     if (!this.isAvailable()) {
       throw new Error(`The robot is not available yet`);
     }
+  }
+
+  canAssemble(): boolean {
+    return this._canDoAction(ASSEMBLING_NEEDED_RESSOURCES);
+  }
+
+  canBuyRobot(): boolean {
+    return this._canDoAction(BUYING_ROBOT_NEEDED_RESSOURCES);
+  }
+
+  private _canDoAction(neededRessources: NeededRessources) {
+    try {
+      this._checkRessources("", neededRessources);
+    } catch {
+      return false;
+    }
+    return true;
   }
 
   /**
@@ -244,6 +281,14 @@ class Robot {
 
   getAction() {
     return this.action;
+  }
+
+  setKeepLocation(keepLocation: boolean) {
+    this.keepLocation = keepLocation;
+  }
+
+  getKeepLocation() {
+    return this.keepLocation;
   }
 }
 

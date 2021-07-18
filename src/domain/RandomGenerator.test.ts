@@ -45,3 +45,55 @@ describe("randomBetweenTwoValues", () => {
     }
   });
 });
+
+describe("chooseValue", () => {
+  it("throws an error when called with only 0 weights", () => {
+    const generator = new RealRandomGenerator();
+    const weightedValues = new Map([
+      ["v1", 0],
+      ["v2", 0],
+      ["v3", 0],
+    ]);
+    function onlyZeroWeights() {
+      generator.chooseValue(weightedValues);
+    }
+    expect(onlyZeroWeights).toThrowError(
+      "At least one of the weights has to be > 0."
+    );
+  });
+
+  it("throws an error when called with negative weight(s)", () => {
+    const generator = new RealRandomGenerator();
+    const weightedValues = new Map([
+      ["v1", -2],
+      ["v2", 0],
+      ["v3", 5],
+    ]);
+    function negativeWeight() {
+      generator.chooseValue(weightedValues);
+    }
+    expect(negativeWeight).toThrowError("Negative weights are not allowed");
+  });
+
+  it("chooses the value greater than 0 among others having a weight of 0", () => {
+    const generator = new RealRandomGenerator();
+    let weightedValues = new Map([
+      ["v1", 0],
+      ["v2", 5],
+      ["v3", 0],
+    ]);
+    expect(generator.chooseValue(weightedValues)).toBe("v2");
+    weightedValues = new Map([
+      ["v1", 0],
+      ["v2", 0],
+      ["v3", 1],
+    ]);
+    expect(generator.chooseValue(weightedValues)).toBe("v3");
+    weightedValues = new Map([
+      ["v1", 8],
+      ["v2", 0],
+      ["v3", 1000],
+    ]);
+    expect(generator.chooseValue(weightedValues)).not.toBe("v2");
+  });
+});
