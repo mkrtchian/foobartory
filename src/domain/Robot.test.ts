@@ -16,8 +16,9 @@ describe("Robot actions", () => {
 
     it(`throws an error when trying to start moving:
         - without next location defined
-        - while the robot is not available`, () => {
-      const robot = new Robot(new Store());
+        - while the robot is not available
+        - while the robot is asked to keep its location`, () => {
+      let robot = new Robot(new Store());
       function moveNoLocation() {
         robot.startMoving(0);
       }
@@ -33,6 +34,16 @@ describe("Robot actions", () => {
         robot.startMoving(0);
       }
       expect(moveNotAvailable).toThrowError("The robot is not available yet");
+
+      robot = new Robot(new Store());
+      robot.setNextLocation(Location.FOO_MINE);
+      robot.setKeepLocation(true);
+      function moveKeepLocation() {
+        robot.startMoving(0);
+      }
+      expect(moveKeepLocation).toThrowError(
+        "The robot can't start moving while it has been asked to keep its location."
+      );
     });
   });
 
