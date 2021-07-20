@@ -5,7 +5,7 @@ import { useRobotState } from "./useGameState";
 
 /**
  * Build and return a Map associating locations with the number
- * of robots on that location, and the number of all robots.
+ * of robots on that location.
  */
 function useRobotsAmountByLocation(game: Game) {
   const robotsLocation = useRobotState<Location[]>({
