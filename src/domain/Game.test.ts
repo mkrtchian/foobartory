@@ -24,7 +24,10 @@ maybe(
   `plays automatically until 20 robots are build`,
   async () => {
     const dateTime = new FakeDateTime();
-    const game = new Game(new BasicStrategy(), { dateTime });
+    const strategy = new BasicStrategy();
+    strategy.setLocationWeight(Location.FOO_MINE, 15);
+    strategy.setAutomaticMovementProbability(25);
+    const game = new Game(strategy, { dateTime });
     game.start();
     for (let i = 0; i < 12000; i++) {
       dateTime.advance(5000);
