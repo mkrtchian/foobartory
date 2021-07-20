@@ -4,7 +4,7 @@ import {
   SuccessGenerator,
 } from "./RandomGenerator";
 import { Location, Robot } from "./Robot";
-import { Store } from "./store";
+import { Store } from "./Store";
 import { BasicStrategy } from "./Strategy";
 
 let store: Store;
@@ -112,9 +112,9 @@ describe("Automatic behavior (no manual next move)", () => {
       strategy.actOnOneFrame(0, store);
       robot.setKeepLocation(true);
       strategy.actOnOneFrame(1000, store);
-      expect(store.foosAmount).toEqual(1);
+      expect(store.getFoosAmount()).toEqual(1);
       strategy.actOnOneFrame(2000, store);
-      expect(store.foosAmount).toEqual(2);
+      expect(store.getFoosAmount()).toEqual(2);
     });
   });
 
@@ -122,8 +122,8 @@ describe("Automatic behavior (no manual next move)", () => {
     it(`starts assembling for available robot, when the random generator tells not 
     to move, and when in the assembling factory with enough ressources`, () => {
       store = new Store();
-      store.foosAmount = 2;
-      store.barsAmount = 2;
+      store.setFoosAmount(2);
+      store.setBarsAmount(2);
       robot = new Robot(store, {
         initialLocation: Location.ASSEMBLING_FACTORY,
         randomGenerator: new SuccessGenerator(),
@@ -132,11 +132,11 @@ describe("Automatic behavior (no manual next move)", () => {
       strategy.actOnOneFrame(0, store);
       robot.setKeepLocation(true);
       strategy.actOnOneFrame(2000, store);
-      expect(store.fooBarsAmount).toEqual(1);
+      expect(store.getFoobarsAmount()).toEqual(1);
       strategy.actOnOneFrame(4000, store);
-      expect(store.fooBarsAmount).toEqual(2);
+      expect(store.getFoobarsAmount()).toEqual(2);
       strategy.actOnOneFrame(6000, store);
-      expect(store.fooBarsAmount).toEqual(2);
+      expect(store.getFoobarsAmount()).toEqual(2);
     });
   });
 
@@ -144,18 +144,18 @@ describe("Automatic behavior (no manual next move)", () => {
     it(`starts buying for available robot, when the random generator tells not 
     to move, and when in the shop with enough ressources`, () => {
       store = new Store();
-      store.foosAmount = 12;
-      store.fooBarsAmount = 6;
+      store.setFoosAmount(12);
+      store.setFoobarsAmount(6);
       robot = new Robot(store);
       strategy = new BasicStrategy({ randomGenerator: new FailureGenerator() });
       strategy.actOnOneFrame(0, store);
       robot.setKeepLocation(true);
       strategy.actOnOneFrame(0, store);
-      expect(store.robots.length).toEqual(2);
+      expect(store.getRobots().length).toEqual(2);
       strategy.actOnOneFrame(0, store);
-      expect(store.robots.length).toEqual(3);
+      expect(store.getRobots().length).toEqual(3);
       strategy.actOnOneFrame(0, store);
-      expect(store.robots.length).toEqual(3);
+      expect(store.getRobots().length).toEqual(3);
     });
   });
 });

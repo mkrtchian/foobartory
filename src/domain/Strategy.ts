@@ -1,6 +1,6 @@
 import { RandomGenerator, RealRandomGenerator } from "./RandomGenerator";
 import { Location, Robot } from "./Robot";
-import { Store } from "./store";
+import { Store } from "./Store";
 interface Strategy {
   actOnOneFrame(currentTime: number, store: Store): void;
 }
@@ -67,7 +67,7 @@ class BasicStrategy implements Strategy {
    * @param currentTime the time where the function is called.
    */
   actOnOneFrame(currentTime: number, store: Store) {
-    store.robots.forEach((robot) => {
+    store.getRobots().forEach((robot) => {
       robot.tick(currentTime);
       if (robot.isAvailable()) {
         const shouldDoManualMove =

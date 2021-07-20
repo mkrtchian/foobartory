@@ -1,6 +1,7 @@
 import { DateTime, RealDateTime } from "./DateTime";
+import { ObservedAmount, ObservedRobot } from "./Observable";
 import { Location, Robot } from "./Robot";
-import { Store } from "./store";
+import { Store } from "./Store";
 import { BasicStrategy, Strategy } from "./Strategy";
 
 const MAX_ROBOTS_LENGTH = 20;
@@ -29,7 +30,7 @@ class Game {
     const nextFrame = () => {
       const now = this.dateTime.getCurrentTime();
       this.strategy.actOnOneFrame(now, this.store);
-      if (this.store.robots.length < MAX_ROBOTS_LENGTH) {
+      if (this.store.getRobots().length < MAX_ROBOTS_LENGTH) {
         requestId = requestAnimationFrame(nextFrame);
       } else {
         cancelAnimationFrame(requestId);
@@ -40,11 +41,11 @@ class Game {
   }
 
   setRobotNextLocation(id: number, location: Location) {
-    this.store.robots[id].setNextLocation(location);
+    this.store.getRobots()[id].setNextLocation(location);
   }
 
   getRobotLocation(id: number): Location {
-    return this.store.robots[id].getLocation();
+    return this.store.getRobots()[id].getLocation();
   }
 
   getStrategy(): Strategy {
@@ -53,6 +54,14 @@ class Game {
 
   getStarted(): boolean {
     return this.started;
+  }
+
+  subscribeToAmount(information: ObservedAmount, callback: Function) {
+    this.store.subscribe(information, callback);
+  }
+
+  subscribeToRobots(information: ObservedRobot, callback: Function) {
+    this.store.subscribeToRobots(information, callback);
   }
 }
 export { Game };
