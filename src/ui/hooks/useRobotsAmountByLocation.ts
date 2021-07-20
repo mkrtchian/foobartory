@@ -28,7 +28,7 @@ function useRobotsAmountByLocation(game: Game) {
     return locations;
   }, [robotsLocation]);
 
-  return robotsAmountByLocation;
+  return { robotsAmountByLocation };
 }
 
 export { useRobotsAmountByLocation };
