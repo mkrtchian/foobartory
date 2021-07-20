@@ -1,17 +1,33 @@
+class Observable<Observed> {
+  protected callbacks: Map<Observed, Function[]>;
+
+  constructor() {
+    this.callbacks = new Map();
+  }
+
+  subscribe(information: Observed, callback: Function) {
+    this.callbacks.get(information)?.push(callback);
+  }
+
+  trigger<T>(information: Observed, value: T) {
+    const callbacks = this.callbacks.get(information);
+    if (callbacks) {
+      callbacks.forEach(function callObservers(callback) {
+        callback(value);
+      });
+    }
+  }
+}
+
 enum ObservedRobot {
   ROBOT_LOCATION,
 }
 
-class ObservableRobot {
-  private robotsCallbacks: Map<ObservedRobot, Function[][]>;
-
+class ObservableRobot extends Observable<ObservedRobot> {
   constructor() {
-    this.robotsCallbacks = new Map([[ObservedRobot.ROBOT_LOCATION, []]]);
+    super();
+    this.callbacks.set(ObservedRobot.ROBOT_LOCATION, []);
   }
-
-  subscribe(information: ObservedRobot, robotId: number, callback: Function) {}
-
-  trigger(information: ObservedRobot, robotId: number, location: Location) {}
 }
 
 enum ObservedAmount {
@@ -21,28 +37,20 @@ enum ObservedAmount {
   ROBOTS_AMOUNT,
 }
 
-class ObservableStore {
-  private amountCallbacks: Map<ObservedAmount, Function[]>;
-
+class ObservableStore extends Observable<ObservedAmount> {
   constructor() {
-    this.amountCallbacks = new Map([
-      [ObservedAmount.FOOS_AMOUNT, []],
-      [ObservedAmount.BARS_AMOUNT, []],
-      [ObservedAmount.FOOBARS_AMOUNT, []],
-      [ObservedAmount.ROBOTS_AMOUNT, []],
-    ]);
-  }
-
-  subscribe(information: ObservedAmount, callback: Function) {
-    this.amountCallbacks.get(information)?.push(callback);
-  }
-
-  trigger(information: ObservedAmount, value: number) {
-    const amountCallbacks = this.amountCallbacks.get(information);
-    if (amountCallbacks) {
-      amountCallbacks.forEach((callback) => callback(value));
-    }
+    super();
+    this.callbacks.set(ObservedAmount.FOOS_AMOUNT, []);
+    this.callbacks.set(ObservedAmount.BARS_AMOUNT, []);
+    this.callbacks.set(ObservedAmount.FOOBARS_AMOUNT, []);
+    this.callbacks.set(ObservedAmount.ROBOTS_AMOUNT, []);
   }
 }
 
-export { ObservableRobot, ObservedRobot, ObservableStore, ObservedAmount };
+export {
+  Observable,
+  ObservableRobot,
+  ObservedRobot,
+  ObservableStore,
+  ObservedAmount,
+};

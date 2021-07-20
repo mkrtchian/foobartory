@@ -1,4 +1,9 @@
-import { ObservableStore, ObservedAmount } from "./Observable";
+import {
+  ObservableRobot,
+  ObservableStore,
+  ObservedAmount,
+  ObservedRobot,
+} from "./Observable";
 import { Robot } from "./Robot";
 
 class Store {
@@ -7,9 +12,11 @@ class Store {
   private fooBarsAmount: number;
   private robots: Robot[];
   private observable: ObservableStore;
+  private robotsObservable: ObservableRobot;
 
   constructor() {
     this.observable = new ObservableStore();
+    this.robotsObservable = new ObservableRobot();
     this.foosAmount = 0;
     this.barsAmount = 0;
     this.fooBarsAmount = 0;
@@ -18,6 +25,10 @@ class Store {
 
   subscribe(information: ObservedAmount, callback: Function) {
     this.observable.subscribe(information, callback);
+  }
+
+  subscribeToRobots(information: ObservedRobot, callback: Function) {
+    this.robotsObservable.subscribe(information, callback);
   }
 
   setFoosAmount(amount: number) {
@@ -55,6 +66,10 @@ class Store {
   getRobots() {
     return this.robots;
   }
+
+  getRobotsObservable() {
+    return this.robotsObservable;
+  }
 }
 
-export { Store, ObservedAmount };
+export { Store, ObservedAmount, ObservedRobot };

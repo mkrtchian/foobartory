@@ -1,5 +1,5 @@
 import { DateTime, RealDateTime } from "./DateTime";
-import { ObservedAmount } from "./Observable";
+import { ObservedAmount, ObservedRobot } from "./Observable";
 import { Location, Robot } from "./Robot";
 import { Store } from "./Store";
 import { BasicStrategy, Strategy } from "./Strategy";
@@ -58,6 +58,10 @@ class Game {
 
   subscribeToAmount(information: ObservedAmount, callback: Function) {
     this.store.subscribe(information, callback);
+  }
+
+  subscribeToRobots(information: ObservedRobot, callback: Function) {
+    this.store.subscribeToRobots(information, callback);
   }
 }
 export { Game };

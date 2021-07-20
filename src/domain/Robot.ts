@@ -41,22 +41,21 @@ class Robot {
   private actionStartTime: number | null;
   private keepLocation;
   private observable: ObservableRobot;
-  private id: number;
 
   constructor(private store: Store, options?: RobotOptions) {
     this.nextLocation = null;
     this.keepLocation = false;
     this.action = WAITING;
     this.actionStartTime = null;
-    this.id = this.store.getRobots().length;
+    this.observable = store.getRobotsObservable();
     this.store.addRobot(this);
-    this.location = options?.initialLocation
-      ? options.initialLocation
-      : Location.SHOP;
+    this.location = Location.SHOP;
+    this.setLocation(
+      options?.initialLocation ? options.initialLocation : Location.SHOP
+    );
     this.randomGenerator = options?.randomGenerator
       ? options?.randomGenerator
       : new RealRandomGenerator();
-    this.observable = new ObservableRobot();
   }
 
   /**
@@ -121,7 +120,7 @@ class Robot {
   }
 
   private _moveTo(location: Location) {
-    this.location = location;
+    this.setLocation(location);
     this.nextLocation = null;
   }
 
@@ -151,7 +150,7 @@ class Robot {
     this.checkAvailable();
     this._checkLocationSpecified();
     this._checkNotKeepingLocation();
-    this.location = Location.TRANSITION;
+    this.setLocation(Location.TRANSITION);
     this.action = MOVING;
     this.actionStartTime = currentTime;
   }
@@ -269,7 +268,7 @@ class Robot {
   }
 
   subscribe(information: ObservedRobot, callback: Function) {
-    this.observable.subscribe(information, this.id, callback);
+    this.observable.subscribe(information, callback);
   }
 
   /**
@@ -286,6 +285,15 @@ class Robot {
 
   getLocation() {
     return this.location;
+  }
+
+  setLocation(location: Location) {
+    this.location = location;
+    const locations: Location[] = [];
+    this.store.getRobots().forEach((robot) => {
+      locations.push(robot.getLocation());
+    });
+    this.observable.trigger(ObservedRobot.ROBOT_LOCATION, locations);
   }
 
   getAction() {

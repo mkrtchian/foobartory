@@ -29,7 +29,7 @@ maybe(
     strategy.setAutomaticMovementProbability(25);
     const game = new Game(strategy, { dateTime });
     game.start();
-    for (let i = 0; i < 12000; i++) {
+    for (let i = 0; i < 5000; i++) {
       dateTime.advance(5000);
       await delay(10);
       if (game.store.getRobots().length >= 20) {
@@ -39,5 +39,5 @@ maybe(
     expect(game.store.getRobots().length).toBeGreaterThanOrEqual(20);
     expect(game.getStarted()).toBeFalsy();
   },
-  120000
+  50000
 );

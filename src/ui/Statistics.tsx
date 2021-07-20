@@ -1,28 +1,33 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import { ObservedAmount } from "../domain";
 import GameContext from "./contexts/game";
+import { useStoreState } from "./hooks";
 
+/**
+ * Display statistics on what is available in the game store.
+ */
 function Statistics() {
   const game = useContext(GameContext);
-  const [foosAmount, setFoosAmount] = useState<number>(
-    game.store.getFoosAmount()
-  );
-  const [barsAmount, setBarsAmount] = useState<number>(
-    game.store.getBarsAmount()
-  );
-  const [foobarsAmount, setFoobarsAmount] = useState<number>(
-    game.store.getFoobarsAmount()
-  );
-  const [robotsAmount, setRobotsAmount] = useState<number>(
-    game.store.getRobots().length
-  );
-  useEffect(() => {
-    game.subscribeToAmount(ObservedAmount.FOOS_AMOUNT, setFoosAmount);
-    game.subscribeToAmount(ObservedAmount.BARS_AMOUNT, setBarsAmount);
-    game.subscribeToAmount(ObservedAmount.FOOBARS_AMOUNT, setFoobarsAmount);
-    game.subscribeToAmount(ObservedAmount.ROBOTS_AMOUNT, setRobotsAmount);
-  }, [game]);
-
+  const foosAmount = useStoreState<number>({
+    game,
+    initialValue: game.store.getFoosAmount(),
+    observed: ObservedAmount.FOOS_AMOUNT,
+  });
+  const barsAmount = useStoreState<number>({
+    game,
+    initialValue: game.store.getBarsAmount(),
+    observed: ObservedAmount.BARS_AMOUNT,
+  });
+  const foobarsAmount = useStoreState<number>({
+    game,
+    initialValue: game.store.getFoobarsAmount(),
+    observed: ObservedAmount.FOOBARS_AMOUNT,
+  });
+  const robotsAmount = useStoreState<number>({
+    game,
+    initialValue: game.store.getRobots().length,
+    observed: ObservedAmount.ROBOTS_AMOUNT,
+  });
   return (
     <ul>
       <li>
