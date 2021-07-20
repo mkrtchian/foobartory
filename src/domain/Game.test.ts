@@ -29,11 +29,11 @@ maybe(
     for (let i = 0; i < 12000; i++) {
       dateTime.advance(5000);
       await delay(10);
-      if (game.store.robots.length >= 20) {
+      if (game.store.getRobots().length >= 20) {
         break;
       }
     }
-    expect(game.store.robots.length).toBeGreaterThanOrEqual(20);
+    expect(game.store.getRobots().length).toBeGreaterThanOrEqual(20);
     expect(game.getStarted()).toBeFalsy();
   },
   120000

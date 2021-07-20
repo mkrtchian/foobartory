@@ -10,8 +10,9 @@ import {
   NeededRessources,
   WAITING,
 } from "./actions";
+import { ObservableRobot, ObservedRobot } from "./Observable";
 import { RandomGenerator, RealRandomGenerator } from "./RandomGenerator";
-import { Store } from "./store";
+import { Store } from "./Store";
 
 enum Location {
   FOO_MINE = "foo mine",
@@ -39,19 +40,23 @@ class Robot {
   private nextLocation: Location | null;
   private actionStartTime: number | null;
   private keepLocation;
+  private observable: ObservableRobot;
+  private id: number;
 
   constructor(private store: Store, options?: RobotOptions) {
     this.nextLocation = null;
     this.keepLocation = false;
     this.action = WAITING;
     this.actionStartTime = null;
-    this.store.robots.push(this);
+    this.id = this.store.getRobots().length;
+    this.store.addRobot(this);
     this.location = options?.initialLocation
       ? options.initialLocation
       : Location.SHOP;
     this.randomGenerator = options?.randomGenerator
       ? options?.randomGenerator
       : new RealRandomGenerator();
+    this.observable = new ObservableRobot();
   }
 
   /**
@@ -121,20 +126,20 @@ class Robot {
   }
 
   private _mineFoo() {
-    this.store.foosAmount += 1;
+    this.store.setFoosAmount(this.store.getFoosAmount() + 1);
   }
 
   private _mineBar() {
-    this.store.barsAmount += 1;
+    this.store.setBarsAmount(this.store.getBarsAmount() + 1);
   }
 
   private _assemble() {
     const isAssemblingSuccessful =
       this.randomGenerator.randomPercentageSuccess(60);
     if (isAssemblingSuccessful) {
-      this.store.fooBarsAmount += 1;
+      this.store.setFoobarsAmount(this.store.getFoobarsAmount() + 1);
     } else {
-      this.store.barsAmount += 1;
+      this.store.setBarsAmount(this.store.getBarsAmount() + 1);
     }
   }
 
@@ -175,8 +180,8 @@ class Robot {
 
     this.action = ASSEMBLING;
     this.actionStartTime = currentTime;
-    this.store.barsAmount -= 1;
-    this.store.foosAmount -= 1;
+    this.store.setBarsAmount(this.store.getBarsAmount() - 1);
+    this.store.setFoosAmount(this.store.getFoosAmount() - 1);
   }
 
   startBuyingRobot(currentTime: number) {
@@ -188,8 +193,8 @@ class Robot {
     );
     this.action = BUYING_ROBOT;
     this.actionStartTime = currentTime;
-    this.store.fooBarsAmount -= 3;
-    this.store.foosAmount -= 6;
+    this.store.setFoobarsAmount(this.store.getFoobarsAmount() - 3);
+    this.store.setFoosAmount(this.store.getFoosAmount() - 6);
   }
 
   private _checkLocation(location: Location) {
@@ -221,13 +226,13 @@ class Robot {
     neededRessources: NeededRessources
   ) {
     const enoughRessources =
-      this.store.fooBarsAmount >= neededRessources.foobars &&
-      this.store.foosAmount >= neededRessources.foos &&
-      this.store.barsAmount >= neededRessources.bars;
+      this.store.getFoobarsAmount() >= neededRessources.foobars &&
+      this.store.getFoosAmount() >= neededRessources.foos &&
+      this.store.getBarsAmount() >= neededRessources.bars;
     if (!enoughRessources) {
       throw new Error(
         `${errorMessageBeginning}.
-        There are only ${this.store.foosAmount} foos, ${this.store.barsAmount} bars and ${this.store.fooBarsAmount} foobars.`
+        There are only ${this.store.getFoosAmount()} foos, ${this.store.getBarsAmount()} bars and ${this.store.getFoobarsAmount()} foobars.`
       );
     }
   }
@@ -263,6 +268,10 @@ class Robot {
     return this.action === WAITING;
   }
 
+  subscribe(information: ObservedRobot, callback: Function) {
+    this.observable.subscribe(information, this.id, callback);
+  }
+
   /**
    * Set the next location where starting to move will lead.
    * A movement can't be started without that location set.
@@ -292,4 +301,4 @@ class Robot {
   }
 }
 
-export { Robot, Location };
+export { Robot, Location, ObservedRobot };
