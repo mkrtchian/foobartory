@@ -4,6 +4,7 @@ interface DateTime {
 
 class FakeDateTime implements DateTime {
   constructor(private time: number = 0) {}
+
   advance(miliseconds: number) {
     this.time += miliseconds;
   }
