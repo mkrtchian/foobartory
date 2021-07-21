@@ -4,7 +4,7 @@ import { Location, Robot } from "./Robot";
 import { Store } from "./Store";
 import { BasicStrategy, Strategy } from "./Strategy";
 
-const MAX_ROBOTS_LENGTH = 20;
+const MAX_ROBOTS = 20;
 
 type GameOptions = {
   dateTime?: DateTime;
@@ -30,7 +30,7 @@ class Game {
     const nextFrame = () => {
       const now = this.dateTime.getCurrentTime();
       this.strategy.actOnOneFrame(now, this.store);
-      if (this.store.getRobots().length < MAX_ROBOTS_LENGTH) {
+      if (this.store.getRobots().length < MAX_ROBOTS) {
         requestId = requestAnimationFrame(nextFrame);
       } else {
         cancelAnimationFrame(requestId);
@@ -64,4 +64,4 @@ class Game {
     this.store.subscribeToRobots(information, callback);
   }
 }
-export { Game };
+export { Game, MAX_ROBOTS };

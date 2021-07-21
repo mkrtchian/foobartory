@@ -2,10 +2,10 @@ import {
   FailureGenerator,
   RealRandomGenerator,
   SuccessGenerator,
-} from "./RandomGenerator";
-import { Location, Robot } from "./Robot";
-import { Store } from "./Store";
-import { BasicStrategy } from "./Strategy";
+} from "../RandomGenerator";
+import { Location, Robot } from "../Robot";
+import { Store } from "../Store";
+import { BasicStrategy } from "../Strategy";
 
 let store: Store;
 let robot: Robot;

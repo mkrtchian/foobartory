@@ -1,8 +1,8 @@
 import { render } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
-import { BasicStrategy, Game, Location } from "../domain";
-import { Robot } from "../domain/Robot";
-import GameContext from "./contexts/game";
+import { BasicStrategy, Game, Location } from "../../../domain";
+import { Robot } from "../../../domain/Robot";
+import GameContext from "../../contexts/game";
 import RobotsLocations from "./RobotsLocations";
 
 let game: Game;
@@ -19,7 +19,7 @@ beforeEach(() => {
   game = new Game(new BasicStrategy());
 });
 
-test("displays total robots amount by location", () => {
+it("displays total robots amount by location", () => {
   const { getByText } = renderRobotsLocations();
   act(() => {
     game.store.getRobots()[0].setLocation(Location.FOO_MINE);

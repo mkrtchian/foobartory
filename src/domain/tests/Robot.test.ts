@@ -1,6 +1,6 @@
-import { FailureGenerator, SuccessGenerator } from "./RandomGenerator";
-import { Location, Robot } from "./Robot";
-import { Store } from "./Store";
+import { FailureGenerator, SuccessGenerator } from "../RandomGenerator";
+import { Location, Robot } from "../Robot";
+import { Store } from "../Store";
 
 let robot: Robot;
 let store: Store;

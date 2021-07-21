@@ -1,8 +1,8 @@
-import { FakeDateTime } from "./DateTime";
-import { Game } from "./Game";
-import { FailureGenerator } from "./RandomGenerator";
-import { Location } from "./Robot";
-import { BasicStrategy } from "./Strategy";
+import { FakeDateTime } from "../DateTime";
+import { Game } from "../Game";
+import { FailureGenerator } from "../RandomGenerator";
+import { Location } from "../Robot";
+import { BasicStrategy } from "../Strategy";
 
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
@@ -25,7 +25,7 @@ maybe(
   async () => {
     const dateTime = new FakeDateTime();
     const strategy = new BasicStrategy();
-    strategy.setLocationWeight(Location.FOO_MINE, 15);
+    strategy.setLocationWeight(Location.FOO_MINE, 150);
     strategy.setAutomaticMovementProbability(25);
     const game = new Game(strategy, { dateTime });
     game.start();

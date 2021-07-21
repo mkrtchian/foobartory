@@ -1,10 +1,11 @@
 import styled from "@emotion/styled";
 import { useEffect, useRef } from "react";
-import { BasicStrategy, Game, Location } from "../domain";
+import { BasicStrategy, Game } from "../domain";
+import { ProbabilityCommands } from "./components/ProbabilityCommands";
+import { RobotsLocations } from "./components/RobotsLocations";
+import { Statistics } from "./components/Statistics";
 import GameContext from "./contexts/game";
 import "./global.css";
-import RobotsLocations from "./RobotsLocations";
-import Statistics from "./Statistics";
 
 const Main = styled.main`
   padding: 1rem;
@@ -15,9 +16,9 @@ const Main = styled.main`
     padding: 1rem 2rem;
   }
   @media (min-width: 600px) {
-    padding: 1rem 3rem;
+    padding: 1rem 8%;
   }
-  @media (min-width: 1000px) {
+  @media (min-width: 950px) {
     padding: 1rem 4rem;
   }
 `;
@@ -49,10 +50,6 @@ function Foobartory() {
   const game = useRef(new Game(new BasicStrategy()));
   useEffect(() => {
     game.current.start();
-    const strategy = game.current.getStrategy() as BasicStrategy;
-    strategy.setLocationWeight(Location.FOO_MINE, 10);
-    strategy.setLocationWeight(Location.BAR_MINE, 3);
-    strategy.setAutomaticMovementProbability(25);
   }, []);
   return (
     <GameContext.Provider value={game.current}>
@@ -61,6 +58,7 @@ function Foobartory() {
           <Title>Foobartory</Title>
           <Statistics />
           <RobotsLocations />
+          <ProbabilityCommands />
         </Container>
       </Main>
     </GameContext.Provider>
