@@ -18,6 +18,19 @@ it(`moves the requested robot to the requested location`, async () => {
   expect(game.getRobotLocation(0)).toEqual(Location.FOO_MINE);
 });
 
+it(`returns the current time from the internal timer when the game is 
+started, and throws an exception when it is stopped.`, async () => {
+  const dateTime = new FakeDateTime(50);
+  const game = new Game(new BasicStrategy(), { dateTime });
+  game.start();
+  expect(game.getCurrentTime()).toEqual(50);
+  game.stop();
+  function getTimeThrow() {
+    game.getCurrentTime();
+  }
+  expect(getTimeThrow).toThrowError("The game is not started");
+});
+
 const maybe = process.env.INTEGRATION_TESTING ? it : it.skip;
 
 maybe(

@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
 import { useEffect, useRef } from "react";
 import { BasicStrategy, Game } from "../domain";
+import { Counter } from "./components/Counter";
 import { ProbabilityCommands } from "./components/ProbabilityCommands";
 import { RobotsLocations } from "./components/RobotsLocations";
 import { Statistics } from "./components/Statistics";
@@ -37,7 +38,25 @@ const Container = styled.div`
   }
 `;
 
+const TitleContainer = styled.div`
+  margin: 1rem 0;
+  display: flex;
+  flex-direction: column;
+
+  @media (min-width: 350px) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+  @media (min-width: 950px) {
+    flex-basis: 100%;
+  }
+`;
+
 const Title = styled.h1`
+  margin: 0;
+  padding: 0.5rem 0;
+
   @media (min-width: 950px) {
     flex-basis: 100%;
   }
@@ -55,7 +74,10 @@ function Foobartory() {
     <GameContext.Provider value={game.current}>
       <Main role="main">
         <Container>
-          <Title>Foobartory</Title>
+          <TitleContainer>
+            <Title>Foobartory</Title>
+            <Counter />
+          </TitleContainer>
           <Statistics />
           <RobotsLocations />
           <ProbabilityCommands />

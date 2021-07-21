@@ -1,9 +1,5 @@
 class Observable<Observed> {
-  protected callbacks: Map<Observed, Function[]>;
-
-  constructor() {
-    this.callbacks = new Map();
-  }
+  constructor(protected callbacks: Map<Observed, Function[]> = new Map()) {}
 
   subscribe(information: Observed, callback: Function) {
     this.callbacks.get(information)?.push(callback);
