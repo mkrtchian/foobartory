@@ -1,8 +1,8 @@
 import { render } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
-import { BasicStrategy, Game } from "../domain";
-import { Robot } from "../domain/Robot";
-import GameContext from "./contexts/game";
+import { BasicStrategy, Game } from "../../../domain";
+import { Robot } from "../../../domain/Robot";
+import GameContext from "../../contexts/game";
 import Statistics from "./Statistics";
 
 let game: Game;
@@ -19,7 +19,7 @@ beforeEach(() => {
   game = new Game(new BasicStrategy());
 });
 
-test("displays the statistics values", () => {
+it("displays the statistics values", () => {
   const { getByText } = renderStatistics();
   act(() => {
     game.store.setFoosAmount(345);
@@ -30,5 +30,5 @@ test("displays the statistics values", () => {
   expect(getByText("345")).toBeInTheDocument();
   expect(getByText("222")).toBeInTheDocument();
   expect(getByText("830")).toBeInTheDocument();
-  expect(getByText("3")).toBeInTheDocument();
+  expect(getByText("3 / 20")).toBeInTheDocument();
 });

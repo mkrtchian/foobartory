@@ -61,6 +61,10 @@ class BasicStrategy implements Strategy {
     this.automaticMovementProbability = probability;
   }
 
+  getAutomaticMovementProbability() {
+    return this.automaticMovementProbability;
+  }
+
   /**
    * Do some action on the content of the store, including robots.
    * This function is called by the game several times per second.

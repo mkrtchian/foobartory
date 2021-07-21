@@ -1,4 +1,4 @@
-import { RealRandomGenerator } from "./RandomGenerator";
+import { RealRandomGenerator } from "../RandomGenerator";
 
 describe("randomPercentageSuccess", () => {
   it("returns true for randomPercentageSuccess with 100%", () => {

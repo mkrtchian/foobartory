@@ -1,8 +1,8 @@
-import { FakeDateTime } from "./DateTime";
-import { Game } from "./Game";
-import { FailureGenerator } from "./RandomGenerator";
-import { Location } from "./Robot";
-import { BasicStrategy } from "./Strategy";
+import { FakeDateTime } from "../DateTime";
+import { Game } from "../Game";
+import { FailureGenerator } from "../RandomGenerator";
+import { Location } from "../Robot";
+import { BasicStrategy } from "../Strategy";
 
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 

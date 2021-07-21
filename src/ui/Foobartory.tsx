@@ -1,10 +1,10 @@
 import styled from "@emotion/styled";
 import { useEffect, useRef } from "react";
 import { BasicStrategy, Game, Location } from "../domain";
+import { RobotsLocations } from "./components/robotsLocations";
+import { Statistics } from "./components/statistics";
 import GameContext from "./contexts/game";
 import "./global.css";
-import RobotsLocations from "./RobotsLocations";
-import Statistics from "./Statistics";
 
 const Main = styled.main`
   padding: 1rem;

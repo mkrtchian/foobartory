@@ -1,8 +1,8 @@
 import styled from "@emotion/styled";
 import { useContext } from "react";
-import { ObservedAmount } from "../domain";
-import GameContext from "./contexts/game";
-import { useStoreState } from "./hooks";
+import { MAX_ROBOTS, ObservedAmount } from "../../../domain";
+import GameContext from "../../contexts/game";
+import { useStoreState } from "../../hooks";
 
 const List = styled.ul`
   display: flex;
@@ -20,6 +20,9 @@ const List = styled.ul`
     flex-wrap: wrap;
     border-radius: 0.4rem;
     box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.15);
+  }
+  @media (min-width: 1200px) {
+    margin-right: 6%;
   }
 `;
 const Li = styled.li`
@@ -43,8 +46,11 @@ const Label = styled.span`
 `;
 const Value = styled.span`
   padding: 0.2rem 0.4rem;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
 
+  @media (min-width: 500px) {
+    font-size: 1.2rem;
+  }
   @media (min-width: 950px) {
     font-size: 1.5rem;
   }
@@ -91,7 +97,9 @@ function Statistics() {
       </Li>
       <Li>
         <Label>Robots</Label>
-        <Value>{robotsAmount}</Value>
+        <Value>
+          {robotsAmount} / {MAX_ROBOTS}
+        </Value>
       </Li>
     </List>
   );

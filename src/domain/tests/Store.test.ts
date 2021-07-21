@@ -1,5 +1,5 @@
-import { Location, Robot } from "./Robot";
-import { ObservedAmount, ObservedRobot, Store } from "./Store";
+import { Location, Robot } from "../Robot";
+import { ObservedAmount, ObservedRobot, Store } from "../Store";
 
 describe("Observing", () => {
   let store: Store;
