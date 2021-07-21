@@ -16,7 +16,7 @@ const List = styled.ul`
 
   @media (min-width: 950px) {
     flex: 1;
-    margin-right: 5%;
+    margin-right: 7%;
     flex-wrap: wrap;
     border-radius: 0.4rem;
     box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.15);
@@ -49,10 +49,11 @@ const Value = styled.span`
   font-size: 1.1rem;
 
   @media (min-width: 500px) {
-    font-size: 1.2rem;
+    font-size: 1.4rem;
   }
   @media (min-width: 950px) {
-    font-size: 1.5rem;
+    padding-top: 0.3rem;
+    font-size: 1.7rem;
   }
 `;
 

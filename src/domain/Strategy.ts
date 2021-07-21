@@ -29,12 +29,12 @@ class BasicStrategy implements Strategy {
     this.randomGenerator = options?.randomGenerator
       ? options.randomGenerator
       : new RealRandomGenerator();
-    this.automaticMovementProbability = 50;
+    this.automaticMovementProbability = 25;
     this.automaticLocationProbabilities = new Map([
-      [Location.FOO_MINE, 5],
-      [Location.BAR_MINE, 5],
-      [Location.ASSEMBLING_FACTORY, 5],
-      [Location.SHOP, 5],
+      [Location.FOO_MINE, 50],
+      [Location.BAR_MINE, 50],
+      [Location.ASSEMBLING_FACTORY, 50],
+      [Location.SHOP, 50],
     ]);
   }
 
@@ -52,6 +52,10 @@ class BasicStrategy implements Strategy {
       );
     }
     this.automaticLocationProbabilities.set(location, weight);
+  }
+
+  getLocationWeight(location: Location) {
+    return this.automaticLocationProbabilities.get(location);
   }
 
   /**

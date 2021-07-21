@@ -15,8 +15,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "downlevelIteration": true,
-    "jsxImportSource": "@emotion/react"
+    "downlevelIteration": true
   },
   "include": ["src"]
 }

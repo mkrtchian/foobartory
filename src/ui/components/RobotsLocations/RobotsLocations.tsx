@@ -16,12 +16,13 @@ import {
 const MainSquare = styled.ul`
   height: 15rem;
   position: relative;
-  margin: 3rem 0;
+  margin: 3rem 0 3.7rem 0;
   list-style-type: none;
   padding: 0;
 
   @media (min-width: 950px) {
     flex: 1.35;
+    height: 17rem;
   }
 `;
 
