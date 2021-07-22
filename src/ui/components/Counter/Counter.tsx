@@ -17,6 +17,8 @@ const Span = styled.span`
 /**
  * Count the current time according to the game internal date time.
  * The counter freezes when the game is finished.
+ * This value is updated every 0.1 seconds, which is enough to show
+ * animated seconds.
  */
 function Counter() {
   const game = useContext(GameContext);

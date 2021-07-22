@@ -17,12 +17,14 @@ class Observable<Observed> {
 
 enum ObservedRobot {
   ROBOT_LOCATION,
+  ROBOT_NEXT_LOCATION,
 }
 
 class ObservableRobot extends Observable<ObservedRobot> {
   constructor() {
     super();
     this.callbacks.set(ObservedRobot.ROBOT_LOCATION, []);
+    this.callbacks.set(ObservedRobot.ROBOT_NEXT_LOCATION, []);
   }
 }
 

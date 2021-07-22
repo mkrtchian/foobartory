@@ -43,12 +43,13 @@ class Robot {
   private observable: ObservableRobot;
 
   constructor(private store: Store, options?: RobotOptions) {
-    this.nextLocation = null;
     this.keepLocation = false;
     this.action = WAITING;
     this.actionStartTime = null;
     this.observable = store.getRobotsObservable();
     this.store.addRobot(this);
+    this.nextLocation = null;
+    this.setNextLocation(this.nextLocation);
     this.location = Location.SHOP;
     this.setLocation(
       options?.initialLocation ? options.initialLocation : Location.SHOP
@@ -121,7 +122,7 @@ class Robot {
 
   private _moveTo(location: Location) {
     this.setLocation(location);
-    this.nextLocation = null;
+    this.setNextLocation(null);
   }
 
   private _mineFoo() {
@@ -275,8 +276,13 @@ class Robot {
    * Set the next location where starting to move will lead.
    * A movement can't be started without that location set.
    */
-  setNextLocation(location: Location) {
+  setNextLocation(location: Location | null) {
     this.nextLocation = location;
+    const nextLocations: (Location | null)[] = [];
+    this.store.getRobots().forEach((robot) => {
+      nextLocations.push(robot.getNextLocation());
+    });
+    this.observable.trigger(ObservedRobot.ROBOT_NEXT_LOCATION, nextLocations);
   }
 
   getNextLocation(): Location | null {

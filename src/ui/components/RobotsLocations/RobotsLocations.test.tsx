@@ -19,8 +19,8 @@ beforeEach(() => {
   game = new Game(new BasicStrategy());
 });
 
-it("displays total robots amount by location", () => {
-  const { getByText } = renderRobotsLocations();
+it("displays total robots amount by location, and total moving", () => {
+  const { getByText, getAllByText } = renderRobotsLocations();
   act(() => {
     game.store.getRobots()[0].setLocation(Location.FOO_MINE);
     game.store.getRobots()[1].setLocation(Location.FOO_MINE);
@@ -33,7 +33,8 @@ it("displays total robots amount by location", () => {
     new Robot(game.store, { initialLocation: Location.ASSEMBLING_FACTORY });
     new Robot(game.store, { initialLocation: Location.SHOP });
   });
-  expect(getByText("0")).toBeInTheDocument();
+  // 0 moving + 0 robots roging to each of 4 locations
+  expect(getAllByText("0")).toHaveLength(5);
   expect(getByText("1")).toBeInTheDocument();
   expect(getByText("2")).toBeInTheDocument();
   expect(getByText("3")).toBeInTheDocument();

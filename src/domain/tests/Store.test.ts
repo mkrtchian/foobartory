@@ -36,20 +36,32 @@ describe("Observing", () => {
     expect(observerFunction).toHaveBeenCalledWith(2);
   });
 
-  it("observes correctly robots amounts", () => {
+  it("observes correctly robots locations", () => {
     let observerFunction = jest.fn();
     const robot1 = new Robot(store);
-    const robot2 = new Robot(store);
+    new Robot(store);
     store.subscribeToRobots(ObservedRobot.ROBOT_LOCATION, observerFunction);
-    robot1.setLocation(Location.FOO_MINE);
+    robot1.setNextLocation(Location.FOO_MINE);
+    robot1.startMoving(0);
+    robot1.tick(5000);
     expect(observerFunction).toHaveBeenCalledWith([
       Location.FOO_MINE,
       Location.SHOP,
     ]);
-    robot2.setLocation(Location.ASSEMBLING_FACTORY);
-    expect(observerFunction).toHaveBeenCalledWith([
-      Location.FOO_MINE,
-      Location.ASSEMBLING_FACTORY,
-    ]);
+  });
+
+  it("observes correctly robots next locations", () => {
+    let observerFunction = jest.fn();
+    const robot1 = new Robot(store);
+    new Robot(store);
+    store.subscribeToRobots(
+      ObservedRobot.ROBOT_NEXT_LOCATION,
+      observerFunction
+    );
+    robot1.setNextLocation(Location.FOO_MINE);
+    expect(observerFunction).toHaveBeenCalledWith([Location.FOO_MINE, null]);
+    robot1.startMoving(0);
+    robot1.tick(5000);
+    expect(observerFunction).toHaveBeenCalledWith([null, null]);
   });
 });
