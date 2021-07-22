@@ -34,6 +34,14 @@ const label = css`
   position: absolute;
   font-weight: bold;
   padding: 0.2rem 0;
+  font-size: 1rem;
+
+  @media (min-width: 400px) {
+    font-size: 1.05rem;
+  }
+  @media (min-width: 600px) {
+    font-size: 1.13rem;
+  }
 `;
 const FooLabel = styled.span`
   ${label}
@@ -60,7 +68,6 @@ const MovingLabel = styled.span`
   transition: all 0.3s ease;
   transition-property: top, left;
   color: black;
-  font-size: 1.13rem;
   bottom: -2rem;
   left: calc(50% - 2rem);
 `;
@@ -71,29 +78,33 @@ const MovingLabel = styled.span`
 function RobotsLocations() {
   const game = useContext(GameContext);
   const { robotsAmountByLocation } = useRobotsAmountByLocation(game);
-  const totalRobotsAmount = game.store.getRobots().length;
   const { robotsAmountByNextLocation } = useRobotsAmountByNextLocation(game);
+  const totalRobotsAmount = game.store.getRobots().length;
   const totalRobotsWithNextLocation = game.store
     .getRobots()
     .reduce(function amountWithNextLocation(accumulator, robot) {
       return robot.getNextLocation() ? accumulator + 1 : accumulator;
     }, 0);
-
+  const circleSizeFactor = 7;
+  const arrowSizeFactor = 8;
   function computeCircleSize(location: Location) {
     const robotsInlocation = robotsAmountByLocation.get(location);
     /* With the square root division the circle sizes increase in a
        softer way: a circle with 1 robot will be 3.9 times smaller
        than a circle with 15 robots, instead of 15 times smaller. */
     return totalRobotsAmount && robotsInlocation
-      ? (Math.sqrt(robotsInlocation) / Math.sqrt(totalRobotsAmount)) * 7
+      ? (Math.sqrt(robotsInlocation) / Math.sqrt(totalRobotsAmount)) *
+          circleSizeFactor
       : 0;
   }
   function computeArrowSize(location: Location) {
     const robotsNextlocation = robotsAmountByNextLocation.get(location);
+    /* For arrow sizes we use the 3rd root instead of the square root
+       to get an even softer change */
     return totalRobotsWithNextLocation && robotsNextlocation
-      ? (Math.sqrt(robotsNextlocation) /
-          Math.sqrt(totalRobotsWithNextLocation)) *
-          9
+      ? (Math.pow(robotsNextlocation, 1 / 3) /
+          Math.pow(totalRobotsWithNextLocation, 1 / 3)) *
+          arrowSizeFactor
       : 0;
   }
   return (

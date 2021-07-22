@@ -1,6 +1,10 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
 
+// these factors mulpitply the arrows' size for smaller viewports
+const SMALL_RESPONSIVE_FACTOR = 1.6;
+const MEDIUM_RESPONSIVE_FACTOR = 1.3;
+
 type ArrowContainerProps = {
   top?: number;
   bottom?: number;
@@ -18,7 +22,7 @@ type SpecificArrowProps = {
 
 function FooArrow({ size, value }: SpecificArrowProps) {
   return (
-    <ArrowContainer top={5.5} left={30} rotate={170} size={size}>
+    <ArrowContainer top={5} left={30} rotate={170} size={size}>
       <ArrowValue value={value} top={1.5} right={1} size={size} />
     </ArrowContainer>
   );
@@ -26,7 +30,7 @@ function FooArrow({ size, value }: SpecificArrowProps) {
 
 function BarArrow({ size, value }: SpecificArrowProps) {
   return (
-    <ArrowContainer top={5.5} right={30} rotate={300} size={size}>
+    <ArrowContainer top={5} right={30} rotate={300} size={size}>
       <ArrowValue value={value} top={1.5} left={1} size={size} />
     </ArrowContainer>
   );
@@ -34,7 +38,7 @@ function BarArrow({ size, value }: SpecificArrowProps) {
 
 function FactoryArrow({ size, value }: SpecificArrowProps) {
   return (
-    <ArrowContainer bottom={5.5} left={30} rotate={120} size={size}>
+    <ArrowContainer bottom={5} left={30} rotate={120} size={size}>
       <ArrowValue value={value} bottom={1.5} right={1} size={size} />
     </ArrowContainer>
   );
@@ -42,7 +46,7 @@ function FactoryArrow({ size, value }: SpecificArrowProps) {
 
 function ShopArrow({ size, value }: SpecificArrowProps) {
   return (
-    <ArrowContainer bottom={5.5} right={30} rotate={350} size={size}>
+    <ArrowContainer bottom={5} right={30} rotate={350} size={size}>
       <ArrowValue value={value} bottom={1.5} left={1} size={size} />
     </ArrowContainer>
   );
@@ -57,10 +61,25 @@ function ArrowContainer({
   rotate,
   children,
 }: ArrowContainerProps) {
-  function buildVerticalPositionRule(positionName: string, position: number) {
+  function buildRules(size: number) {
+    return `${top ? buildVerticalPositionRule("top", top, size) : ""}
+        ${bottom ? buildVerticalPositionRule("bottom", bottom, size) : ""}
+        ${left ? buildHorizontalPositionRule("left", left, size) : ""}
+        ${right ? buildHorizontalPositionRule("right", right, size) : ""}
+        `;
+  }
+  function buildVerticalPositionRule(
+    positionName: string,
+    position: number,
+    size: number
+  ) {
     return `${positionName}: calc(${position}rem - calc(${size}rem / 2));`;
   }
-  function buildHorizontalPositionRule(positionName: string, position: number) {
+  function buildHorizontalPositionRule(
+    positionName: string,
+    position: number,
+    size: number
+  ) {
     return `${positionName}: calc(${position}% - calc(${size}rem / 2));`;
   }
   return (
@@ -68,11 +87,15 @@ function ArrowContainer({
       css={css`
         transition: all 0.3s ease;
         transition-property: top, bottom, left, right;
-        ${top ? buildVerticalPositionRule("top", top) : ""}
-        ${bottom ? buildVerticalPositionRule("bottom", bottom) : ""}
-        ${left ? buildHorizontalPositionRule("left", left) : ""}
-        ${right ? buildHorizontalPositionRule("right", right) : ""}
         position: absolute;
+        ${buildRules(size / SMALL_RESPONSIVE_FACTOR)}
+
+        @media (min-width: 450px) {
+          ${buildRules(size / MEDIUM_RESPONSIVE_FACTOR)}
+        }
+        @media (min-width: 600px) {
+          ${buildRules(size)}
+        }
       `}
     >
       <Arrow rotate={rotate} size={size} />
@@ -95,8 +118,17 @@ function Arrow({ rotate, size }: ArrowProps) {
         transition: all 0.3s ease;
         transition-property: width, height;
         transform: rotate(${rotate}deg);
-        width: ${size}rem;
-        height: ${size}rem;
+        width: ${size / SMALL_RESPONSIVE_FACTOR}rem;
+        height: ${size / SMALL_RESPONSIVE_FACTOR}rem;
+
+        @media (min-width: 450px) {
+          width: ${size / MEDIUM_RESPONSIVE_FACTOR}rem;
+          height: ${size / MEDIUM_RESPONSIVE_FACTOR}rem;
+        }
+        @media (min-width: 600px) {
+          width: ${size}rem;
+          height: ${size}rem;
+        }
       `}
       height="100%"
       width="100%"
@@ -126,8 +158,32 @@ function ArrowValue({
   left,
   right,
 }: ArrowValueProps) {
-  function buildPositionRule(positionName: string, position: number) {
-    return `${positionName}: ${(position * size) / 7}rem;`;
+  const fontSizeFactor = 4.4;
+  const horizontalPositionFactor = 5;
+  const verticalPositionFactor = 7;
+  function buildRules(size: number) {
+    return `${top ? buildVerticalPositionRule("top", top, size) : ""}
+        ${bottom ? buildVerticalPositionRule("bottom", bottom, size) : ""}
+        ${left ? buildHorizontalPositionRule("left", left, size) : ""}
+        ${right ? buildHorizontalPositionRule("right", right, size) : ""}
+        font-size: ${size / fontSizeFactor}rem;
+        `;
+  }
+  function buildVerticalPositionRule(
+    positionName: string,
+    position: number,
+    size: number
+  ) {
+    return `${positionName}: ${(position * size) / verticalPositionFactor}rem;`;
+  }
+  function buildHorizontalPositionRule(
+    positionName: string,
+    position: number,
+    size: number
+  ) {
+    return `${positionName}: ${
+      (position * size) / horizontalPositionFactor
+    }rem;`;
   }
   return (
     <span
@@ -135,11 +191,14 @@ function ArrowValue({
         position: absolute;
         transition: all 0.3s ease;
         transition-property: font-size, top, bottom, left, right;
-        ${top ? buildPositionRule("top", top) : ""}
-        ${bottom ? buildPositionRule("bottom", bottom) : ""}
-        ${left ? buildPositionRule("left", left) : ""}
-        ${right ? buildPositionRule("right", right) : ""}
-        font-size: ${size / 4.4}rem;
+        ${buildRules(size / SMALL_RESPONSIVE_FACTOR)}
+
+        @media (min-width: 450px) {
+          ${buildRules(size / MEDIUM_RESPONSIVE_FACTOR)}
+        }
+        @media (min-width: 600px) {
+          ${buildRules(size)}
+        }
       `}
     >
       {value}
