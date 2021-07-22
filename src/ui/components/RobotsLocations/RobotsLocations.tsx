@@ -5,6 +5,7 @@ import { useContext } from "react";
 import { Location } from "../../../domain";
 import GameContext from "../../contexts/game";
 import { useRobotsAmountByLocation } from "../../hooks";
+import { BarArrow, FactoryArrow, FooArrow, ShopArrow } from "./Arrows";
 import {
   BarCircle,
   FactoryCircle,
@@ -31,27 +32,27 @@ const label = css`
   font-weight: bold;
   padding: 0.2rem 0;
 `;
-const LabelFoo = styled.span`
+const FooLabel = styled.span`
   ${label}
   top: -2.1rem;
   left: 0;
 `;
-const Labelbar = styled.span`
+const BarLabel = styled.span`
   ${label}
   top: -2.1rem;
   right: 0;
 `;
-const LabelFactory = styled.span`
+const FactoryLabel = styled.span`
   ${label}
   bottom: -2.2rem;
   left: 0;
 `;
-const LabelShop = styled.span`
+const ShopLabel = styled.span`
   ${label}
   bottom: -2.2rem;
   right: 0;
 `;
-const LabelMoving = styled.span`
+const MovingLabel = styled.span`
   ${label}
   transition: all 0.3s ease;
   transition-property: top, left;
@@ -78,35 +79,40 @@ function RobotsLocations() {
       ? (Math.sqrt(robotsInlocation) / Math.sqrt(totalRobotsAmount)) * 7
       : 0;
   }
+  const size = 7;
   return (
     <MainSquare>
       <li>
-        <LabelFoo>Foo mine</LabelFoo>
+        <FooLabel>Foo mine</FooLabel>
         <FooCircle size={computeCircleSize(Location.FOO_MINE)}>
           {robotsAmountByLocation.get(Location.FOO_MINE)}
         </FooCircle>
+        <FooArrow size={size} value={9} />
       </li>
       <li>
-        <Labelbar>Bar mine</Labelbar>
+        <BarLabel>Bar mine</BarLabel>
         <BarCircle size={computeCircleSize(Location.BAR_MINE)}>
           {robotsAmountByLocation.get(Location.BAR_MINE)}
         </BarCircle>
+        <BarArrow size={size} value={9} />
       </li>
       <li>
-        <LabelFactory>Assembling factory</LabelFactory>
+        <FactoryLabel>Assembling factory</FactoryLabel>
         <FactoryCircle size={computeCircleSize(Location.ASSEMBLING_FACTORY)}>
           {robotsAmountByLocation.get(Location.ASSEMBLING_FACTORY)}
         </FactoryCircle>
+        <FactoryArrow size={size} value={9} />
       </li>
       <li>
-        <LabelShop>Shop</LabelShop>
+        <ShopLabel>Shop</ShopLabel>
         <ShopCircle size={computeCircleSize(Location.SHOP)}>
           {robotsAmountByLocation.get(Location.SHOP)}
         </ShopCircle>
+        <ShopArrow size={size} value={9} />
       </li>
       <li>
         <MovingCircle size={computeCircleSize(Location.TRANSITION)}>
-          <LabelMoving>Moving</LabelMoving>
+          <MovingLabel>Moving</MovingLabel>
           {robotsAmountByLocation.get(Location.TRANSITION)}
         </MovingCircle>
       </li>
