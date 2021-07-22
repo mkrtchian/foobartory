@@ -4,15 +4,18 @@ import styled from "@emotion/styled";
 import { useContext } from "react";
 import { Location } from "../../../domain";
 import GameContext from "../../contexts/game";
-import { useRobotsAmountByLocation } from "../../hooks";
-import { BarArrow, FactoryArrow, FooArrow, ShopArrow } from "./Arrows";
+import { BarArrow, FactoryArrow, FooArrow, ShopArrow } from "./arrows";
 import {
   BarCircle,
   FactoryCircle,
   FooCircle,
   MovingCircle,
   ShopCircle,
-} from "./Circles";
+} from "./circles";
+import {
+  useRobotsAmountByLocation,
+  useRobotsAmountByNextLocation,
+} from "./useRobotsAmountByLocation";
 
 const MainSquare = styled.ul`
   height: 15rem;
@@ -63,12 +66,18 @@ const MovingLabel = styled.span`
 `;
 
 /**
- * Display a high level graphical view robots locations.
+ * Display a high level graphical view of robots current and next locations.
  */
 function RobotsLocations() {
   const game = useContext(GameContext);
   const { robotsAmountByLocation } = useRobotsAmountByLocation(game);
   const totalRobotsAmount = game.store.getRobots().length;
+  const { robotsAmountByNextLocation } = useRobotsAmountByNextLocation(game);
+  const totalRobotsWithNextLocation = game.store
+    .getRobots()
+    .reduce(function amountWithNextLocation(accumulator, robot) {
+      return robot.getNextLocation() ? accumulator + 1 : accumulator;
+    }, 0);
 
   function computeCircleSize(location: Location) {
     const robotsInlocation = robotsAmountByLocation.get(location);
@@ -79,7 +88,14 @@ function RobotsLocations() {
       ? (Math.sqrt(robotsInlocation) / Math.sqrt(totalRobotsAmount)) * 7
       : 0;
   }
-  const size = 7;
+  function computeArrowSize(location: Location) {
+    const robotsNextlocation = robotsAmountByNextLocation.get(location);
+    return totalRobotsWithNextLocation && robotsNextlocation
+      ? (Math.sqrt(robotsNextlocation) /
+          Math.sqrt(totalRobotsWithNextLocation)) *
+          9
+      : 0;
+  }
   return (
     <MainSquare>
       <li>
@@ -87,28 +103,44 @@ function RobotsLocations() {
         <FooCircle size={computeCircleSize(Location.FOO_MINE)}>
           {robotsAmountByLocation.get(Location.FOO_MINE)}
         </FooCircle>
-        <FooArrow size={size} value={9} />
+        <FooArrow
+          size={computeArrowSize(Location.FOO_MINE)}
+          value={robotsAmountByNextLocation.get(Location.FOO_MINE) as number}
+        />
       </li>
       <li>
         <BarLabel>Bar mine</BarLabel>
         <BarCircle size={computeCircleSize(Location.BAR_MINE)}>
           {robotsAmountByLocation.get(Location.BAR_MINE)}
         </BarCircle>
-        <BarArrow size={size} value={9} />
+        <BarArrow
+          size={computeArrowSize(Location.BAR_MINE)}
+          value={robotsAmountByNextLocation.get(Location.BAR_MINE) as number}
+        />
       </li>
       <li>
         <FactoryLabel>Assembling factory</FactoryLabel>
         <FactoryCircle size={computeCircleSize(Location.ASSEMBLING_FACTORY)}>
           {robotsAmountByLocation.get(Location.ASSEMBLING_FACTORY)}
         </FactoryCircle>
-        <FactoryArrow size={size} value={9} />
+        <FactoryArrow
+          size={computeArrowSize(Location.ASSEMBLING_FACTORY)}
+          value={
+            robotsAmountByNextLocation.get(
+              Location.ASSEMBLING_FACTORY
+            ) as number
+          }
+        />
       </li>
       <li>
         <ShopLabel>Shop</ShopLabel>
         <ShopCircle size={computeCircleSize(Location.SHOP)}>
           {robotsAmountByLocation.get(Location.SHOP)}
         </ShopCircle>
-        <ShopArrow size={size} value={9} />
+        <ShopArrow
+          size={computeArrowSize(Location.SHOP)}
+          value={robotsAmountByNextLocation.get(Location.SHOP) as number}
+        />
       </li>
       <li>
         <MovingCircle size={computeCircleSize(Location.TRANSITION)}>

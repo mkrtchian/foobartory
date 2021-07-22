@@ -11,6 +11,43 @@ type ArrowContainerProps = {
   children: React.ReactNode;
 };
 
+type SpecificArrowProps = {
+  size: number;
+  value: number;
+};
+
+function FooArrow({ size, value }: SpecificArrowProps) {
+  return (
+    <ArrowContainer top={5.5} left={30} rotate={170} size={size}>
+      <ArrowValue value={value} top={1.5} right={1} size={size} />
+    </ArrowContainer>
+  );
+}
+
+function BarArrow({ size, value }: SpecificArrowProps) {
+  return (
+    <ArrowContainer top={5.5} right={30} rotate={300} size={size}>
+      <ArrowValue value={value} top={1.5} left={1} size={size} />
+    </ArrowContainer>
+  );
+}
+
+function FactoryArrow({ size, value }: SpecificArrowProps) {
+  return (
+    <ArrowContainer bottom={5.5} left={30} rotate={120} size={size}>
+      <ArrowValue value={value} bottom={1.5} right={1} size={size} />
+    </ArrowContainer>
+  );
+}
+
+function ShopArrow({ size, value }: SpecificArrowProps) {
+  return (
+    <ArrowContainer bottom={5.5} right={30} rotate={350} size={size}>
+      <ArrowValue value={value} bottom={1.5} left={1} size={size} />
+    </ArrowContainer>
+  );
+}
+
 function ArrowContainer({
   top,
   bottom,
@@ -51,6 +88,7 @@ type ArrowProps = {
 
 function Arrow({ rotate, size }: ArrowProps) {
   return (
+    // SVG Arrow by Daria Szymonowicz from the Noun Project
     <svg
       xmlns="http://www.w3.org/2000/svg"
       css={css`
@@ -101,48 +139,11 @@ function ArrowValue({
         ${bottom ? buildPositionRule("bottom", bottom) : ""}
         ${left ? buildPositionRule("left", left) : ""}
         ${right ? buildPositionRule("right", right) : ""}
-        font-size: ${size / 4}rem;
+        font-size: ${size / 4.4}rem;
       `}
     >
       {value}
     </span>
-  );
-}
-
-type SpecificArrowProps = {
-  size: number;
-  value: number;
-};
-
-function FooArrow({ size, value }: SpecificArrowProps) {
-  return (
-    <ArrowContainer top={5.5} left={30} rotate={170} size={size}>
-      <ArrowValue value={value} top={1.5} right={1} size={size} />
-    </ArrowContainer>
-  );
-}
-
-function BarArrow({ size, value }: SpecificArrowProps) {
-  return (
-    <ArrowContainer top={5.5} right={30} rotate={300} size={size}>
-      <ArrowValue value={value} top={1.5} left={1} size={size} />
-    </ArrowContainer>
-  );
-}
-
-function FactoryArrow({ size, value }: SpecificArrowProps) {
-  return (
-    <ArrowContainer bottom={5.5} left={30} rotate={120} size={size}>
-      <ArrowValue value={value} bottom={1.5} right={1} size={size} />
-    </ArrowContainer>
-  );
-}
-
-function ShopArrow({ size, value }: SpecificArrowProps) {
-  return (
-    <ArrowContainer bottom={5.5} right={30} rotate={350} size={size}>
-      <ArrowValue value={value} bottom={1.5} left={1} size={size} />
-    </ArrowContainer>
   );
 }
 
