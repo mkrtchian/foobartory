@@ -1,3 +1,4 @@
+import { MOVING, WAITING } from "./actions";
 import { RandomGenerator, RealRandomGenerator } from "./RandomGenerator";
 import { Location, Robot } from "./Robot";
 import { Store } from "./Store";
@@ -29,7 +30,7 @@ class BasicStrategy implements Strategy {
     this.randomGenerator = options?.randomGenerator
       ? options.randomGenerator
       : new RealRandomGenerator();
-    this.automaticMovementProbability = 25;
+    this.automaticMovementProbability = 50;
     this.automaticLocationProbabilities = new Map([
       [Location.FOO_MINE, 50],
       [Location.BAR_MINE, 50],
@@ -90,10 +91,13 @@ class BasicStrategy implements Strategy {
   }
 
   private _handleAutomaticActions(robot: Robot, currentTime: number) {
+    const hasJustMoved = robot.getPreviousAction() === MOVING;
     const shouldAutomaticallyMove =
       this.randomGenerator.randomPercentageSuccess(
         this.automaticMovementProbability
-      ) && !robot.getKeepLocation();
+      ) &&
+      !robot.getKeepLocation() &&
+      !hasJustMoved;
     if (shouldAutomaticallyMove) {
       this._doAutomaticMove(robot, currentTime);
     } else {
@@ -129,11 +133,17 @@ class BasicStrategy implements Strategy {
       case Location.ASSEMBLING_FACTORY:
         if (robot.canAssemble()) {
           robot.startAssembling(currentTime);
+        } else {
+          robot.setAction(WAITING);
+          robot.setLocation(robot.getLocation());
         }
         break;
       case Location.SHOP:
         if (robot.canBuyRobot()) {
           robot.startBuyingRobot(currentTime);
+        } else {
+          robot.setAction(WAITING);
+          robot.setLocation(robot.getLocation());
         }
         break;
       default:
