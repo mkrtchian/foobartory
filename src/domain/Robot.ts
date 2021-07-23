@@ -41,10 +41,13 @@ class Robot {
   private actionStartTime: number | null;
   private keepLocation;
   private observable: ObservableRobot;
+  private previousLocation: Location;
+  private previousAction: Action;
 
   constructor(private store: Store, options?: RobotOptions) {
     this.keepLocation = false;
     this.action = WAITING;
+    this.previousAction = WAITING;
     this.actionStartTime = null;
     this.observable = store.getRobotsObservable();
     this.store.addRobot(this);
@@ -54,6 +57,7 @@ class Robot {
     this.setLocation(
       options?.initialLocation ? options.initialLocation : Location.SHOP
     );
+    this.previousLocation = Location.SHOP;
     this.randomGenerator = options?.randomGenerator
       ? options?.randomGenerator
       : new RealRandomGenerator();
@@ -116,7 +120,7 @@ class Robot {
         );
       }
     }
-    this.action = WAITING;
+    this.setAction(WAITING);
     this.actionStartTime = null;
   }
 
@@ -152,16 +156,16 @@ class Robot {
     this._checkLocationSpecified();
     this._checkNotKeepingLocation();
     this.setLocation(Location.TRANSITION);
-    this.action = MOVING;
+    this.setAction(MOVING);
     this.actionStartTime = currentTime;
   }
 
   startMining(currentTime: number) {
     this.checkAvailable();
     if (this.location === Location.FOO_MINE) {
-      this.action = MINING_FOO;
+      this.setAction(MINING_FOO);
     } else if (this.location === Location.BAR_MINE) {
-      this.action = MINING_BAR;
+      this.setAction(MINING_BAR);
     } else {
       throw new Error(
         `The robot has to be in a mine to mine, here it is in ${this.location}.`
@@ -178,7 +182,7 @@ class Robot {
       ASSEMBLING_NEEDED_RESSOURCES
     );
 
-    this.action = ASSEMBLING;
+    this.setAction(ASSEMBLING);
     this.actionStartTime = currentTime;
     this.store.setBarsAmount(this.store.getBarsAmount() - 1);
     this.store.setFoosAmount(this.store.getFoosAmount() - 1);
@@ -191,7 +195,7 @@ class Robot {
       "To buy a new robot, the robot needs 6 foos and 3 foobars",
       BUYING_ROBOT_NEEDED_RESSOURCES
     );
-    this.action = BUYING_ROBOT;
+    this.setAction(BUYING_ROBOT);
     this.actionStartTime = currentTime;
     this.store.setFoobarsAmount(this.store.getFoobarsAmount() - 3);
     this.store.setFoosAmount(this.store.getFoosAmount() - 6);
@@ -294,6 +298,7 @@ class Robot {
   }
 
   setLocation(location: Location) {
+    this.previousLocation = this.location;
     this.location = location;
     const locations: Location[] = [];
     this.store.getRobots().forEach((robot) => {
@@ -306,12 +311,25 @@ class Robot {
     return this.action;
   }
 
+  setAction(action: Action) {
+    this.previousAction = this.action;
+    this.action = action;
+  }
+
+  getPreviousAction() {
+    return this.previousAction;
+  }
+
   setKeepLocation(keepLocation: boolean) {
     this.keepLocation = keepLocation;
   }
 
   getKeepLocation() {
     return this.keepLocation;
+  }
+
+  getPreviousLocation() {
+    return this.previousLocation;
   }
 }
 

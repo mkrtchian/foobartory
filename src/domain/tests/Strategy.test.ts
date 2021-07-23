@@ -13,7 +13,7 @@ let strategy: BasicStrategy;
 
 beforeEach(() => {
   store = new Store();
-  robot = new Robot(store);
+  robot = new Robot(store, { randomGenerator: new SuccessGenerator() });
   strategy = new BasicStrategy({ randomGenerator: new SuccessGenerator() });
 });
 
@@ -45,7 +45,7 @@ describe("Automatic behavior (no manual next move)", () => {
       expect(robot.getLocation()).toEqual(Location.TRANSITION);
     });
 
-    it(`the decision to move by the dandom generator is influenced by the 
+    it(`the decision to move by the random generator is influenced by the 
     chosen movement probability`, () => {
       strategy = new BasicStrategy({
         randomGenerator: new RealRandomGenerator(),
@@ -70,6 +70,36 @@ describe("Automatic behavior (no manual next move)", () => {
       robot.setKeepLocation(false);
       strategy.actOnOneFrame(1, store);
       expect(robot.getLocation()).toEqual(Location.TRANSITION);
+    });
+
+    it(`does not start moving robot that is available, if it has just moved to the
+    current location. It needs to do an action before having the possibility to move
+    again. Here: -> go to factory -> build foobar -> go to shop`, () => {
+      store.setFoosAmount(1);
+      store.setBarsAmount(1);
+      store.setFoobarsAmount(0);
+      strategy.actOnOneFrame(0, store);
+      strategy.actOnOneFrame(5000, store);
+      expect(robot.getLocation()).toEqual(Location.ASSEMBLING_FACTORY);
+      strategy.actOnOneFrame(7000, store);
+      expect(store.getFoobarsAmount()).toEqual(1);
+      strategy.actOnOneFrame(12000, store);
+      expect(robot.getLocation()).toEqual(Location.SHOP);
+    });
+
+    it(`when the robot has just moved to a new position, but there is no location
+    related action possible, it stays for a brief moment and moves just after again.
+    Here: -> go to factory -> not enough to build foobar -> go to shop`, () => {
+      store.setFoosAmount(0);
+      store.setBarsAmount(1);
+      store.setFoobarsAmount(0);
+      strategy.actOnOneFrame(0, store);
+      strategy.actOnOneFrame(5000, store);
+      expect(robot.getLocation()).toEqual(Location.ASSEMBLING_FACTORY);
+      strategy.actOnOneFrame(7000, store);
+      expect(store.getFoobarsAmount()).toEqual(0);
+      strategy.actOnOneFrame(12000, store);
+      expect(robot.getLocation()).toEqual(Location.SHOP);
     });
 
     it(`when decided to move, it moves robot to a specific direction influenced by
