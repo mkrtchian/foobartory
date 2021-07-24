@@ -1,3 +1,4 @@
+import { ASSEMBLING, BUYING_ROBOT, MINING_FOO, MOVING } from "../actions";
 import {
   FailureGenerator,
   RealRandomGenerator,
@@ -75,30 +76,38 @@ describe("Automatic behavior (no manual next move)", () => {
     it(`does not start moving robot that is available, if it has just moved to the
     current location. It needs to do an action before having the possibility to move
     again. Here: -> go to factory -> build foobar -> go to shop`, () => {
+      let currentTime = 0;
       store.setFoosAmount(1);
       store.setBarsAmount(1);
-      store.setFoobarsAmount(0);
-      strategy.actOnOneFrame(0, store);
-      strategy.actOnOneFrame(5000, store);
+      store.setFoobarsAmount(currentTime);
+      strategy.actOnOneFrame(currentTime, store);
+      currentTime += MOVING.totalDuration;
+      strategy.actOnOneFrame(currentTime, store);
       expect(robot.getLocation()).toEqual(Location.ASSEMBLING_FACTORY);
-      strategy.actOnOneFrame(7000, store);
+      currentTime += ASSEMBLING.totalDuration;
+      strategy.actOnOneFrame(currentTime, store);
       expect(store.getFoobarsAmount()).toEqual(1);
-      strategy.actOnOneFrame(12000, store);
+      currentTime += MOVING.totalDuration;
+      strategy.actOnOneFrame(currentTime, store);
       expect(robot.getLocation()).toEqual(Location.SHOP);
     });
 
     it(`when the robot has just moved to a new position, but there is no location
     related action possible, it stays for a brief moment and moves just after again.
     Here: -> go to factory -> not enough to build foobar -> go to shop`, () => {
+      let currentTime = 0;
       store.setFoosAmount(0);
       store.setBarsAmount(1);
       store.setFoobarsAmount(0);
-      strategy.actOnOneFrame(0, store);
-      strategy.actOnOneFrame(5000, store);
+      strategy.actOnOneFrame(currentTime, store);
+      currentTime += MOVING.totalDuration;
+      strategy.actOnOneFrame(currentTime, store);
       expect(robot.getLocation()).toEqual(Location.ASSEMBLING_FACTORY);
-      strategy.actOnOneFrame(7000, store);
+      currentTime += ASSEMBLING.totalDuration;
+      strategy.actOnOneFrame(currentTime, store);
       expect(store.getFoobarsAmount()).toEqual(0);
-      strategy.actOnOneFrame(12000, store);
+      currentTime += MOVING.totalDuration;
+      strategy.actOnOneFrame(currentTime, store);
       expect(robot.getLocation()).toEqual(Location.SHOP);
     });
 
@@ -112,9 +121,11 @@ describe("Automatic behavior (no manual next move)", () => {
       strategy.setLocationWeight(Location.BAR_MINE, 1);
       strategy.setLocationWeight(Location.ASSEMBLING_FACTORY, 0);
       strategy.setLocationWeight(Location.SHOP, 0);
-      strategy.actOnOneFrame(0, store);
+      let currentTime = 0;
+      strategy.actOnOneFrame(currentTime, store);
       robot.setKeepLocation(true);
-      strategy.actOnOneFrame(5000, store);
+      currentTime += MOVING.totalDuration;
+      strategy.actOnOneFrame(currentTime, store);
       expect(robot.getLocation()).toEqual(Location.BAR_MINE);
     });
 
@@ -127,8 +138,10 @@ describe("Automatic behavior (no manual next move)", () => {
       strategy.setLocationWeight(Location.BAR_MINE, 0);
       strategy.setLocationWeight(Location.ASSEMBLING_FACTORY, 0);
       strategy.setLocationWeight(Location.SHOP, 0);
-      strategy.actOnOneFrame(0, store);
-      strategy.actOnOneFrame(5000, store);
+      let currentTime = 0;
+      strategy.actOnOneFrame(currentTime, store);
+      currentTime += MOVING.totalDuration;
+      strategy.actOnOneFrame(currentTime, store);
       expect(robot.getLocation()).toEqual(Location.SHOP);
     });
   });
@@ -138,12 +151,15 @@ describe("Automatic behavior (no manual next move)", () => {
     to move, and when in a mine location`, () => {
       store = new Store();
       robot = new Robot(store, { initialLocation: Location.FOO_MINE });
+      let currentTime = 0;
       strategy = new BasicStrategy({ randomGenerator: new FailureGenerator() });
-      strategy.actOnOneFrame(0, store);
+      strategy.actOnOneFrame(currentTime, store);
       robot.setKeepLocation(true);
-      strategy.actOnOneFrame(1000, store);
+      currentTime += MINING_FOO.totalDuration;
+      strategy.actOnOneFrame(currentTime, store);
       expect(store.getFoosAmount()).toEqual(1);
-      strategy.actOnOneFrame(2000, store);
+      currentTime += MINING_FOO.totalDuration;
+      strategy.actOnOneFrame(currentTime, store);
       expect(store.getFoosAmount()).toEqual(2);
     });
   });
@@ -159,13 +175,17 @@ describe("Automatic behavior (no manual next move)", () => {
         randomGenerator: new SuccessGenerator(),
       });
       strategy = new BasicStrategy({ randomGenerator: new FailureGenerator() });
+      let currentTime = 0;
       strategy.actOnOneFrame(0, store);
       robot.setKeepLocation(true);
-      strategy.actOnOneFrame(2000, store);
+      currentTime += ASSEMBLING.totalDuration;
+      strategy.actOnOneFrame(currentTime, store);
       expect(store.getFoobarsAmount()).toEqual(1);
-      strategy.actOnOneFrame(4000, store);
+      currentTime += ASSEMBLING.totalDuration;
+      strategy.actOnOneFrame(currentTime, store);
       expect(store.getFoobarsAmount()).toEqual(2);
-      strategy.actOnOneFrame(6000, store);
+      currentTime += ASSEMBLING.totalDuration;
+      strategy.actOnOneFrame(currentTime, store);
       expect(store.getFoobarsAmount()).toEqual(2);
     });
   });
@@ -178,13 +198,17 @@ describe("Automatic behavior (no manual next move)", () => {
       store.setFoobarsAmount(6);
       robot = new Robot(store);
       strategy = new BasicStrategy({ randomGenerator: new FailureGenerator() });
-      strategy.actOnOneFrame(0, store);
+      let currentTime = 0;
+      strategy.actOnOneFrame(currentTime, store);
       robot.setKeepLocation(true);
-      strategy.actOnOneFrame(0, store);
+      currentTime += BUYING_ROBOT.totalDuration;
+      strategy.actOnOneFrame(currentTime, store);
       expect(store.getRobots().length).toEqual(2);
-      strategy.actOnOneFrame(0, store);
+      currentTime += BUYING_ROBOT.totalDuration;
+      strategy.actOnOneFrame(currentTime, store);
       expect(store.getRobots().length).toEqual(3);
-      strategy.actOnOneFrame(0, store);
+      currentTime += BUYING_ROBOT.totalDuration;
+      strategy.actOnOneFrame(currentTime, store);
       expect(store.getRobots().length).toEqual(3);
     });
   });

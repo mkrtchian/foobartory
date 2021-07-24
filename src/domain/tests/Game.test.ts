@@ -1,8 +1,13 @@
+import { MOVING } from "../actions";
 import { FakeDateTime } from "../DateTime";
-import { Game } from "../Game";
+import { Game, MAX_ROBOTS } from "../Game";
 import { FailureGenerator } from "../RandomGenerator";
 import { Location } from "../Robot";
-import { BasicStrategy } from "../Strategy";
+import {
+  BasicStrategy,
+  INITIAL_BAR_MINE_WEIGHT,
+  INITIAL_FOO_MINE_WEIGHT,
+} from "../Strategy";
 
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
@@ -13,7 +18,7 @@ it(`moves the requested robot to the requested location`, async () => {
   game.start();
   game.setRobotNextLocation(0, Location.FOO_MINE);
   await delay(50);
-  dateTime.advance(5000);
+  dateTime.advance(MOVING.totalDuration);
   await delay(50);
   expect(game.getRobotLocation(0)).toEqual(Location.FOO_MINE);
 });
@@ -34,22 +39,22 @@ started, and throws an exception when it is stopped.`, async () => {
 const maybe = process.env.INTEGRATION_TESTING ? it : it.skip;
 
 maybe(
-  `plays automatically until 20 robots are build`,
+  `plays automatically until MAX_ROBOTS robots are build`,
   async () => {
     const dateTime = new FakeDateTime();
     const strategy = new BasicStrategy();
-    strategy.setLocationWeight(Location.FOO_MINE, 150);
-    strategy.setAutomaticMovementProbability(25);
+    strategy.setLocationWeight(Location.FOO_MINE, INITIAL_FOO_MINE_WEIGHT * 3);
+    strategy.setAutomaticMovementProbability(INITIAL_BAR_MINE_WEIGHT / 2);
     const game = new Game(strategy, { dateTime });
     game.start();
     for (let i = 0; i < 5000; i++) {
-      dateTime.advance(5000);
+      dateTime.advance(MOVING.totalDuration);
       await delay(10);
-      if (game.store.getRobots().length >= 20) {
+      if (game.store.getRobots().length >= MAX_ROBOTS) {
         break;
       }
     }
-    expect(game.store.getRobots().length).toBeGreaterThanOrEqual(20);
+    expect(game.store.getRobots().length).toBeGreaterThanOrEqual(MAX_ROBOTS);
     expect(game.getStarted()).toBeFalsy();
   },
   50000

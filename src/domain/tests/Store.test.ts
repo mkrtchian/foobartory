@@ -1,3 +1,4 @@
+import { MOVING } from "../actions";
 import { Location, Robot } from "../Robot";
 import { ObservedAmount, ObservedRobot, Store } from "../Store";
 
@@ -40,10 +41,12 @@ describe("Observing", () => {
     let observerFunction = jest.fn();
     const robot1 = new Robot(store);
     new Robot(store);
+    let currentTime = 0;
     store.subscribeToRobots(ObservedRobot.ROBOT_LOCATION, observerFunction);
     robot1.setNextLocation(Location.FOO_MINE);
-    robot1.startMoving(0);
-    robot1.tick(5000);
+    robot1.startMoving(currentTime);
+    currentTime += MOVING.totalDuration;
+    robot1.tick(currentTime);
     expect(observerFunction).toHaveBeenCalledWith([
       Location.FOO_MINE,
       Location.SHOP,
@@ -54,14 +57,16 @@ describe("Observing", () => {
     let observerFunction = jest.fn();
     const robot1 = new Robot(store);
     new Robot(store);
+    let currentTime = 0;
     store.subscribeToRobots(
       ObservedRobot.ROBOT_NEXT_LOCATION,
       observerFunction
     );
     robot1.setNextLocation(Location.FOO_MINE);
     expect(observerFunction).toHaveBeenCalledWith([Location.FOO_MINE, null]);
-    robot1.startMoving(0);
-    robot1.tick(5000);
+    robot1.startMoving(currentTime);
+    currentTime += MOVING.totalDuration;
+    robot1.tick(currentTime);
     expect(observerFunction).toHaveBeenCalledWith([null, null]);
   });
 });

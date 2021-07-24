@@ -1,3 +1,10 @@
+import {
+  ASSEMBLING,
+  BUYING_ROBOT,
+  MINING_BAR,
+  MINING_FOO,
+  MOVING,
+} from "../actions";
 import { FailureGenerator, SuccessGenerator } from "../RandomGenerator";
 import { Location, Robot } from "../Robot";
 import { Store } from "../Store";
@@ -13,11 +20,14 @@ beforeEach(() => {
 describe("Robot actions", () => {
   describe("move", () => {
     it("moves to the next location  after the required time", () => {
+      let currentTime = 0;
       robot.setNextLocation(Location.FOO_MINE);
-      robot.startMoving(0);
-      robot.tick(4999);
+      robot.startMoving(currentTime);
+      currentTime += MOVING.totalDuration - 1;
+      robot.tick(currentTime);
       expect(robot.getLocation()).toEqual(Location.TRANSITION);
-      robot.tick(5000);
+      currentTime += 1;
+      robot.tick(currentTime);
       expect(robot.getLocation()).toEqual(Location.FOO_MINE);
     });
 
@@ -58,20 +68,27 @@ describe("Robot actions", () => {
       robot = new Robot(store, {
         initialLocation: Location.FOO_MINE,
       });
-      robot.startMining(0);
-      robot.tick(999);
+      var currentTime = 0;
+      robot.startMining(currentTime);
+      currentTime += MINING_FOO.totalDuration - 1;
+      robot.tick(currentTime);
       expect(store.getFoosAmount()).toEqual(0);
-      robot.tick(1000);
+      currentTime += 1;
+      robot.tick(currentTime);
       expect(store.getFoosAmount()).toEqual(1);
+
       store = new Store();
       robot = new Robot(store, {
         initialLocation: Location.BAR_MINE,
         randomGenerator: new SuccessGenerator(),
       });
-      robot.startMining(0);
-      robot.tick(1999);
+      currentTime = 0;
+      robot.startMining(currentTime);
+      currentTime += MINING_BAR.randomBetween[1] - 1;
+      robot.tick(currentTime);
       expect(store.getBarsAmount()).toEqual(0);
-      robot.tick(2000);
+      currentTime += 1;
+      robot.tick(currentTime);
       expect(store.getBarsAmount()).toEqual(1);
     });
 
@@ -81,10 +98,13 @@ describe("Robot actions", () => {
         randomGenerator: new FailureGenerator(),
         initialLocation: Location.BAR_MINE,
       });
-      robot.startMining(0);
-      robot.tick(499);
+      let currentTime = 0;
+      robot.startMining(currentTime);
+      currentTime += MINING_BAR.randomBetween[0] - 1;
+      robot.tick(currentTime);
       expect(store.getBarsAmount()).toEqual(0);
-      robot.tick(500);
+      currentTime += 1;
+      robot.tick(currentTime);
       expect(store.getBarsAmount()).toEqual(1);
     });
 
@@ -118,12 +138,15 @@ describe("Robot actions", () => {
         randomGenerator: new SuccessGenerator(),
         initialLocation: Location.ASSEMBLING_FACTORY,
       });
-      robot.startAssembling(0);
-      robot.tick(1999);
+      let currentTime = 0;
+      robot.startAssembling(currentTime);
+      currentTime += ASSEMBLING.totalDuration - 1;
+      robot.tick(currentTime);
       expect(store.getFoobarsAmount()).toEqual(0);
       expect(store.getBarsAmount()).toEqual(0);
       expect(store.getFoosAmount()).toEqual(0);
-      robot.tick(2000);
+      currentTime += 1;
+      robot.tick(currentTime);
       expect(store.getFoobarsAmount()).toEqual(1);
       expect(store.getBarsAmount()).toEqual(0);
       expect(store.getFoosAmount()).toEqual(0);
@@ -136,8 +159,10 @@ describe("Robot actions", () => {
         randomGenerator: new FailureGenerator(),
         initialLocation: Location.ASSEMBLING_FACTORY,
       });
-      robot.startAssembling(0);
-      robot.tick(2000);
+      let currentTime = 0;
+      robot.startAssembling(currentTime);
+      currentTime += ASSEMBLING.totalDuration;
+      robot.tick(currentTime);
       expect(store.getFoobarsAmount()).toEqual(0);
       expect(store.getBarsAmount()).toEqual(1);
       expect(store.getFoosAmount()).toEqual(0);
@@ -190,8 +215,10 @@ describe("Robot actions", () => {
       store.setFoosAmount(6);
       store.setFoobarsAmount(3);
       robot = new Robot(store);
-      robot.startBuyingRobot(0);
-      robot.tick(0);
+      let currentTime = 0;
+      robot.startBuyingRobot(currentTime);
+      currentTime += BUYING_ROBOT.totalDuration;
+      robot.tick(currentTime);
       expect(store.getFoobarsAmount()).toEqual(0);
       expect(store.getFoosAmount()).toEqual(0);
       expect(store.getRobots()).toHaveLength(2);
