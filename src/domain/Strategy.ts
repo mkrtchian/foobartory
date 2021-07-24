@@ -2,6 +2,13 @@ import { MOVING, WAITING } from "./actions";
 import { RandomGenerator, RealRandomGenerator } from "./RandomGenerator";
 import { Location, Robot } from "./Robot";
 import { Store } from "./Store";
+
+const INITIAL_MOVEMENT_PROBABILITY = 50;
+const INITIAL_FOO_MINE_WEIGHT = 50;
+const INITIAL_BAR_MINE_WEIGHT = 50;
+const INITIAL_ASSEMBLING_FACTORY_WEIGHT = 50;
+const INITIAL_SHOP_WEIGHT = 50;
+
 interface Strategy {
   actOnOneFrame(currentTime: number, store: Store): void;
 }
@@ -24,18 +31,18 @@ type BasicStrategyOptions = {
 class BasicStrategy implements Strategy {
   private randomGenerator: RandomGenerator;
   private automaticMovementProbability: number;
-  private automaticLocationProbabilities: Map<Location, number>;
+  private automaticLocationWeights: Map<Location, number>;
 
   constructor(options?: BasicStrategyOptions) {
     this.randomGenerator = options?.randomGenerator
       ? options.randomGenerator
       : new RealRandomGenerator();
-    this.automaticMovementProbability = 50;
-    this.automaticLocationProbabilities = new Map([
-      [Location.FOO_MINE, 50],
-      [Location.BAR_MINE, 50],
-      [Location.ASSEMBLING_FACTORY, 50],
-      [Location.SHOP, 50],
+    this.automaticMovementProbability = INITIAL_MOVEMENT_PROBABILITY;
+    this.automaticLocationWeights = new Map([
+      [Location.FOO_MINE, INITIAL_FOO_MINE_WEIGHT],
+      [Location.BAR_MINE, INITIAL_BAR_MINE_WEIGHT],
+      [Location.ASSEMBLING_FACTORY, INITIAL_ASSEMBLING_FACTORY_WEIGHT],
+      [Location.SHOP, INITIAL_SHOP_WEIGHT],
     ]);
   }
 
@@ -52,11 +59,11 @@ class BasicStrategy implements Strategy {
         `The assigned weight ${weight} has to be greater than 0.`
       );
     }
-    this.automaticLocationProbabilities.set(location, weight);
+    this.automaticLocationWeights.set(location, weight);
   }
 
   getLocationWeight(location: Location) {
-    return this.automaticLocationProbabilities.get(location);
+    return this.automaticLocationWeights.get(location);
   }
 
   /**
@@ -106,7 +113,7 @@ class BasicStrategy implements Strategy {
   }
 
   private _doAutomaticMove(robot: Robot, currentTime: number) {
-    const possibleLocations = new Map(this.automaticLocationProbabilities);
+    const possibleLocations = new Map(this.automaticLocationWeights);
     possibleLocations.delete(robot.getLocation());
     try {
       const chosenLocation =
@@ -154,5 +161,12 @@ class BasicStrategy implements Strategy {
   }
 }
 
-export { BasicStrategy };
+export {
+  BasicStrategy,
+  INITIAL_MOVEMENT_PROBABILITY,
+  INITIAL_FOO_MINE_WEIGHT,
+  INITIAL_BAR_MINE_WEIGHT,
+  INITIAL_ASSEMBLING_FACTORY_WEIGHT,
+  INITIAL_SHOP_WEIGHT,
+};
 export type { Strategy };

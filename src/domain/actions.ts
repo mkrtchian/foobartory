@@ -19,32 +19,32 @@ interface ActionWithRandom extends ActionBase {
 
 type Action = ActionWithDuration | ActionWithRandom;
 
-const MOVING: Action = {
+const MOVING: ActionWithDuration = {
   actionType: ActionType.MOVING,
   totalDuration: 5000,
 };
 
-const MINING_FOO: Action = {
+const MINING_FOO: ActionWithDuration = {
   actionType: ActionType.MINING_FOO,
   totalDuration: 1000,
 };
 
-const MINING_BAR: Action = {
+const MINING_BAR: ActionWithRandom = {
   actionType: ActionType.MINING_BAR,
   randomBetween: [500, 2000],
 };
 
-const ASSEMBLING: Action = {
+const ASSEMBLING: ActionWithDuration = {
   actionType: ActionType.ASSEMBLING,
   totalDuration: 2000,
 };
 
-const BUYING_ROBOT: Action = {
+const BUYING_ROBOT: ActionWithDuration = {
   actionType: ActionType.BUYING_ROBOT,
   totalDuration: 0,
 };
 
-const WAITING: Action = {
+const WAITING: ActionWithDuration = {
   actionType: ActionType.WAITING,
   totalDuration: 0,
 };
