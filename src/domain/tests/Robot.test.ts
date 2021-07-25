@@ -5,8 +5,9 @@ import {
   MINING_FOO,
   MOVING,
 } from "../actions";
+import Location from "../locations";
 import { FailureGenerator, SuccessGenerator } from "../RandomGenerator";
-import { Location, Robot } from "../Robot";
+import { Robot } from "../Robot";
 import { Store } from "../Store";
 
 let robot: Robot;
@@ -38,9 +39,7 @@ describe("Robot actions", () => {
       function moveNoLocation() {
         robot.startMoving(0);
       }
-      expect(moveNoLocation).toThrowError(
-        "The robot can't start moving without next location specified."
-      );
+      expect(moveNoLocation).toThrowError("without next location specified");
 
       robot.setNextLocation(Location.FOO_MINE);
       robot.startMoving(0);
@@ -64,12 +63,15 @@ describe("Robot actions", () => {
   });
 
   describe("mine", () => {
+    const barMiningMinDuration = MINING_BAR.totalDurationIn[0];
+    const barMiningMaxDuration = MINING_BAR.totalDurationIn[1];
+
     it("mines after the required time when being on a mine location", () => {
       robot = new Robot(store, {
         initialLocation: Location.FOO_MINE,
       });
       var currentTime = 0;
-      robot.startMining(currentTime);
+      robot.startLocationRelatedAction(currentTime);
       currentTime += MINING_FOO.totalDuration - 1;
       robot.tick(currentTime);
       expect(store.getFoosAmount()).toEqual(0);
@@ -83,8 +85,8 @@ describe("Robot actions", () => {
         randomGenerator: new SuccessGenerator(),
       });
       currentTime = 0;
-      robot.startMining(currentTime);
-      currentTime += MINING_BAR.randomBetween[1] - 1;
+      robot.startLocationRelatedAction(currentTime);
+      currentTime += barMiningMaxDuration - 1;
       robot.tick(currentTime);
       expect(store.getBarsAmount()).toEqual(0);
       currentTime += 1;
@@ -99,8 +101,8 @@ describe("Robot actions", () => {
         initialLocation: Location.BAR_MINE,
       });
       let currentTime = 0;
-      robot.startMining(currentTime);
-      currentTime += MINING_BAR.randomBetween[0] - 1;
+      robot.startLocationRelatedAction(currentTime);
+      currentTime += barMiningMinDuration - 1;
       robot.tick(currentTime);
       expect(store.getBarsAmount()).toEqual(0);
       currentTime += 1;
@@ -109,21 +111,15 @@ describe("Robot actions", () => {
     });
 
     it(`throws an error when trying to start mining:
-        - somewhere else than a in a mine
         - while the robot is not available`, () => {
       robot = new Robot(store, {
-        initialLocation: Location.ASSEMBLING_FACTORY,
+        initialLocation: Location.FOO_MINE,
       });
-      function mineAndThrow() {
-        robot.startMining(0);
-      }
-      expect(mineAndThrow).toThrowError("The robot has to be in a mine");
-
-      robot.setNextLocation(Location.FOO_MINE);
+      robot.setNextLocation(Location.ASSEMBLING_FACTORY);
       robot.startMoving(0);
       robot.tick(100);
       function mineNotAvailable() {
-        robot.startMining(0);
+        robot.startLocationRelatedAction(0);
       }
       expect(mineNotAvailable).toThrowError("The robot is not available yet");
     });
@@ -139,7 +135,7 @@ describe("Robot actions", () => {
         initialLocation: Location.ASSEMBLING_FACTORY,
       });
       let currentTime = 0;
-      robot.startAssembling(currentTime);
+      robot.startLocationRelatedAction(currentTime);
       currentTime += ASSEMBLING.totalDuration - 1;
       robot.tick(currentTime);
       expect(store.getFoobarsAmount()).toEqual(0);
@@ -160,7 +156,7 @@ describe("Robot actions", () => {
         initialLocation: Location.ASSEMBLING_FACTORY,
       });
       let currentTime = 0;
-      robot.startAssembling(currentTime);
+      robot.startLocationRelatedAction(currentTime);
       currentTime += ASSEMBLING.totalDuration;
       robot.tick(currentTime);
       expect(store.getFoobarsAmount()).toEqual(0);
@@ -169,28 +165,17 @@ describe("Robot actions", () => {
     });
 
     it(`throws an error:
-       - when trying to assemble somewhere else than in the assemble factory
        - without enough foos and bars
        - while the robot is not available`, () => {
       store.setFoosAmount(1);
       store.setBarsAmount(1);
       robot = new Robot(store, {
         randomGenerator: new SuccessGenerator(),
-      });
-      function assembleWrongLocation() {
-        robot.startAssembling(0);
-      }
-      expect(assembleWrongLocation).toThrowError(
-        "The robot has to be in the assembling factory"
-      );
-
-      robot = new Robot(store, {
-        randomGenerator: new SuccessGenerator(),
         initialLocation: Location.ASSEMBLING_FACTORY,
       });
       store.setFoosAmount(0);
       function assembleNotEnoughFoo() {
-        robot.startAssembling(0);
+        robot.startLocationRelatedAction(0);
       }
       expect(assembleNotEnoughFoo).toThrowError(
         "To create a foobar the robot needs one foo and one bar"
@@ -200,7 +185,7 @@ describe("Robot actions", () => {
       robot.startMoving(0);
       robot.tick(100);
       function assembleNotAvailable() {
-        robot.startAssembling(0);
+        robot.startLocationRelatedAction(0);
       }
       expect(assembleNotAvailable).toThrowError(
         "The robot is not available yet"
@@ -209,14 +194,14 @@ describe("Robot actions", () => {
   });
 
   describe("buy a robot", () => {
-    it(`buys a new robot when on shop and with enough 
+    it(`buys a new robot when on shop and with enough
     foos and foobars`, () => {
       store = new Store();
       store.setFoosAmount(6);
       store.setFoobarsAmount(3);
       robot = new Robot(store);
       let currentTime = 0;
-      robot.startBuyingRobot(currentTime);
+      robot.startLocationRelatedAction(currentTime);
       currentTime += BUYING_ROBOT.totalDuration;
       robot.tick(currentTime);
       expect(store.getFoobarsAmount()).toEqual(0);
@@ -225,22 +210,13 @@ describe("Robot actions", () => {
     });
 
     it(`throws an error:
-        - when trying to buy a tobot somewhere else than in the shop
         - without enough foos and foobars
         - while the robot is not available`, () => {
       store.setFoosAmount(6);
       store.setFoobarsAmount(3);
-      robot = new Robot(store, {
-        initialLocation: Location.ASSEMBLING_FACTORY,
-      });
-      function buyBadLocation() {
-        robot.startBuyingRobot(0);
-      }
-      expect(buyBadLocation).toThrowError("The robot has to be in the shop");
-
       robot = new Robot(store);
       function buyNotEnoughFoo() {
-        robot.startBuyingRobot(0);
+        robot.startLocationRelatedAction(0);
       }
       store.setFoosAmount(2);
       expect(buyNotEnoughFoo).toThrowError(
@@ -251,7 +227,7 @@ describe("Robot actions", () => {
       robot.startMoving(0);
       robot.tick(100);
       function buyNotAvailable() {
-        robot.startBuyingRobot(0);
+        robot.startLocationRelatedAction(0);
       }
       expect(buyNotAvailable).toThrowError("The robot is not available yet");
     });

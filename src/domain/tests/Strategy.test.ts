@@ -1,10 +1,11 @@
 import { ASSEMBLING, BUYING_ROBOT, MINING_FOO, MOVING } from "../actions";
+import Location from "../locations";
 import {
   FailureGenerator,
   RealRandomGenerator,
   SuccessGenerator,
 } from "../RandomGenerator";
-import { Location, Robot } from "../Robot";
+import { Robot } from "../Robot";
 import { Store } from "../Store";
 import { BasicStrategy } from "../Strategy";
 

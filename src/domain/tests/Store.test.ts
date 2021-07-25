@@ -1,5 +1,6 @@
 import { MOVING } from "../actions";
-import { Location, Robot } from "../Robot";
+import Location from "../locations";
+import { Robot } from "../Robot";
 import { ObservedAmount, ObservedRobot, Store } from "../Store";
 
 describe("Observing", () => {
