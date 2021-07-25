@@ -1,7 +1,8 @@
 import { Game, MAX_ROBOTS } from "./Game";
+import Location from "./locations";
 import { ObservedAmount, ObservedRobot } from "./Observable";
-import { Location } from "./Robot";
 import { BasicStrategy } from "./Strategy";
+
 export {
   Game,
   BasicStrategy,

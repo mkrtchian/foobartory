@@ -1,13 +1,9 @@
 import { MOVING } from "../actions";
 import { FakeDateTime } from "../DateTime";
 import { Game, MAX_ROBOTS } from "../Game";
+import Location from "../locations";
 import { FailureGenerator } from "../RandomGenerator";
-import { Location } from "../Robot";
-import {
-  BasicStrategy,
-  INITIAL_BAR_MINE_WEIGHT,
-  INITIAL_FOO_MINE_WEIGHT,
-} from "../Strategy";
+import { BasicStrategy, INITIAL_WEIGHTS } from "../Strategy";
 
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
@@ -43,12 +39,12 @@ maybe(
   async () => {
     const dateTime = new FakeDateTime();
     const strategy = new BasicStrategy();
-    strategy.setLocationWeight(Location.FOO_MINE, INITIAL_FOO_MINE_WEIGHT * 3);
-    strategy.setAutomaticMovementProbability(INITIAL_BAR_MINE_WEIGHT / 2);
+    strategy.setLocationWeight(Location.FOO_MINE, INITIAL_WEIGHTS.fooMine * 3);
+    strategy.setAutomaticMovementProbability(INITIAL_WEIGHTS.barMine / 2);
     const game = new Game(strategy, { dateTime });
     game.start();
     for (let i = 0; i < 5000; i++) {
-      dateTime.advance(MOVING.totalDuration);
+      dateTime.advance(MOVING.totalDuration as number);
       await delay(10);
       if (game.store.getRobots().length >= MAX_ROBOTS) {
         break;

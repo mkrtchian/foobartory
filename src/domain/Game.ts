@@ -1,6 +1,7 @@
 import { DateTime, RealDateTime } from "./DateTime";
+import Location from "./locations";
 import { ObservedAmount, ObservedRobot } from "./Observable";
-import { Location, Robot } from "./Robot";
+import { Robot } from "./Robot";
 import { Store } from "./Store";
 import { Strategy } from "./Strategy";
 

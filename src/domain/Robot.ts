@@ -1,26 +1,20 @@
 import {
   Action,
   ASSEMBLING,
-  ASSEMBLING_NEEDED_RESSOURCES,
   BUYING_ROBOT,
-  BUYING_ROBOT_NEEDED_RESSOURCES,
+  isActionWithDuration,
+  isActionWithRandomDuration,
   MINING_BAR,
   MINING_FOO,
   MOVING,
   NeededRessources,
+  Ressources,
   WAITING,
 } from "./actions";
+import Location from "./locations";
 import { ObservableRobot, ObservedRobot } from "./Observable";
 import { RandomGenerator, RealRandomGenerator } from "./RandomGenerator";
 import { Store } from "./Store";
-
-enum Location {
-  FOO_MINE = "foo mine",
-  BAR_MINE = "bar mine",
-  ASSEMBLING_FACTORY = "assembling factory",
-  SHOP = "shop",
-  TRANSITION = "transition",
-}
 
 type RobotOptions = {
   randomGenerator?: RandomGenerator;
@@ -41,7 +35,6 @@ class Robot {
   private actionStartTime: number | null;
   private keepLocation;
   private observable: ObservableRobot;
-  private previousLocation: Location;
   private previousAction: Action;
 
   constructor(private store: Store, options?: RobotOptions) {
@@ -57,7 +50,6 @@ class Robot {
     this.setLocation(
       options?.initialLocation ? options.initialLocation : Location.SHOP
     );
-    this.previousLocation = Location.SHOP;
     this.randomGenerator = options?.randomGenerator
       ? options?.randomGenerator
       : new RealRandomGenerator();
@@ -71,150 +63,109 @@ class Robot {
    */
   tick(currentTime: number) {
     if (this.actionStartTime !== null) {
-      const actionCurrentDuration = currentTime - this.actionStartTime;
+      const actionAlreadyExecutedDuration = currentTime - this.actionStartTime;
       let actionTotalDuration: number;
-      if ("randomBetween" in this.action) {
+      if (isActionWithRandomDuration(this.action)) {
         actionTotalDuration = this.randomGenerator.randomBetweenTwoValues(
-          ...this.action.randomBetween
+          ...this.action.totalDurationIn
         );
-      } else {
+      } else if (isActionWithDuration(this.action)) {
         actionTotalDuration = this.action.totalDuration;
+      } else {
+        throw new Error(
+          `Action total duration has not been found for action ${this.action}.`
+        );
       }
-      if (actionCurrentDuration >= actionTotalDuration) {
+      if (actionAlreadyExecutedDuration >= actionTotalDuration) {
         this._endAction();
       }
     }
   }
 
-  _endAction() {
-    switch (this.action.actionType) {
-      case MOVING.actionType: {
-        if (this.nextLocation) {
-          this._moveTo(this.nextLocation);
-        } else {
-          throw new Error(
-            "The robot can't end its move without a location specified."
-          );
-        }
-        break;
-      }
-      case MINING_FOO.actionType: {
-        this._mineFoo();
-        break;
-      }
-      case MINING_BAR.actionType: {
-        this._mineBar();
-        break;
-      }
-      case ASSEMBLING.actionType: {
-        this._assemble();
-        break;
-      }
-      case BUYING_ROBOT.actionType: {
-        this._buyRobot();
-        break;
-      }
-      default: {
-        throw new Error(
-          `There is a start time defined for an action, but the action of the robot is incorrect (${this.action.actionType}).`
-        );
-      }
+  private _endAction() {
+    if (this.action === MOVING) {
+      this._endMove();
+    } else {
+      this._endLocationRelatedAction(this.action);
     }
     this.setAction(WAITING);
     this.actionStartTime = null;
   }
 
-  private _moveTo(location: Location) {
-    this.setLocation(location);
-    this.setNextLocation(null);
-  }
-
-  private _mineFoo() {
-    this.store.setFoosAmount(this.store.getFoosAmount() + 1);
-  }
-
-  private _mineBar() {
-    this.store.setBarsAmount(this.store.getBarsAmount() + 1);
-  }
-
-  private _assemble() {
-    const isAssemblingSuccessful =
-      this.randomGenerator.randomPercentageSuccess(60);
-    if (isAssemblingSuccessful) {
-      this.store.setFoobarsAmount(this.store.getFoobarsAmount() + 1);
-    } else {
-      this.store.setBarsAmount(this.store.getBarsAmount() + 1);
-    }
-  }
-
-  private _buyRobot() {
-    new Robot(this.store);
-  }
-
-  startMoving(currentTime: number) {
-    this.checkAvailable();
+  private _endMove() {
     this._checkLocationSpecified();
-    this._checkNotKeepingLocation();
-    this.setLocation(Location.TRANSITION);
-    this.setAction(MOVING);
-    this.actionStartTime = currentTime;
-  }
-
-  startMining(currentTime: number) {
-    this.checkAvailable();
-    if (this.location === Location.FOO_MINE) {
-      this.setAction(MINING_FOO);
-    } else if (this.location === Location.BAR_MINE) {
-      this.setAction(MINING_BAR);
-    } else {
-      throw new Error(
-        `The robot has to be in a mine to mine, here it is in ${this.location}.`
-      );
-    }
-    this.actionStartTime = currentTime;
-  }
-
-  startAssembling(currentTime: number) {
-    this.checkAvailable();
-    this._checkLocation(Location.ASSEMBLING_FACTORY);
-    this._checkRessources(
-      "To create a foobar the robot needs one foo and one bar",
-      ASSEMBLING_NEEDED_RESSOURCES
-    );
-
-    this.setAction(ASSEMBLING);
-    this.actionStartTime = currentTime;
-    this.store.setBarsAmount(this.store.getBarsAmount() - 1);
-    this.store.setFoosAmount(this.store.getFoosAmount() - 1);
-  }
-
-  startBuyingRobot(currentTime: number) {
-    this.checkAvailable();
-    this._checkLocation(Location.SHOP);
-    this._checkRessources(
-      "To buy a new robot, the robot needs 6 foos and 3 foobars",
-      BUYING_ROBOT_NEEDED_RESSOURCES
-    );
-    this.setAction(BUYING_ROBOT);
-    this.actionStartTime = currentTime;
-    this.store.setFoobarsAmount(this.store.getFoobarsAmount() - 3);
-    this.store.setFoosAmount(this.store.getFoosAmount() - 6);
-  }
-
-  private _checkLocation(location: Location) {
-    if (location !== this.location) {
-      throw new Error(
-        `The robot has to be in the ${location}, here it is in ${this.location}.`
-      );
-    }
+    this.setLocation(this.nextLocation as Location);
+    this.setNextLocation(null);
   }
 
   private _checkLocationSpecified() {
     if (!this.getNextLocation()) {
       throw new Error(
-        "The robot can't start moving without next location specified."
+        "The robot can't start or end moving without next location specified."
       );
     }
+  }
+
+  private _endLocationRelatedAction(action: Action) {
+    let isActionSuccessful = action.successPercentage
+      ? this.randomGenerator.randomPercentageSuccess(action.successPercentage)
+      : true;
+    if (isActionSuccessful) {
+      this._applyActionSuccessfulResult(action);
+    } else {
+      this._applyActionUnsuccessfulResult(action);
+    }
+  }
+
+  private _applyActionSuccessfulResult(action: Action) {
+    this._consumeRessources(action?.successfulResult);
+  }
+
+  private _applyActionUnsuccessfulResult(action: Action) {
+    this._consumeRessources(action?.unsuccessfulResult);
+  }
+
+  private _consumeRessources(
+    actionResult?: Ressources,
+    transform = (value: number) => value
+  ) {
+    actionResult?.foos &&
+      this.store.setFoosAmount(
+        this.store.getFoosAmount() + transform(actionResult.foos)
+      );
+    actionResult?.bars &&
+      this.store.setBarsAmount(
+        this.store.getBarsAmount() + transform(actionResult.bars)
+      );
+    actionResult?.foobars &&
+      this.store.setFoobarsAmount(
+        this.store.getFoobarsAmount() + transform(actionResult.foobars)
+      );
+    actionResult?.robots && this._addRobots(transform(actionResult.robots));
+  }
+
+  private _addRobots(amount: number) {
+    // currently robots can only be added, a negative amount will do nothing
+    for (let i = 0; i < amount; i++) {
+      new Robot(this.store);
+    }
+  }
+
+  /**
+   * Starts moving if the robot isn't doing anything and the next location
+   * has been specified.
+   */
+  startMoving(currentTime: number) {
+    this._checksForStartingMove();
+    this.setLocation(Location.TRANSITION);
+    this.setAction(MOVING);
+    this.actionStartTime = currentTime;
+  }
+
+  private _checksForStartingMove() {
+    this._checkAvailable();
+    this._checkLocationSpecified();
+    this._checkNotKeepingLocation();
   }
 
   private _checkNotKeepingLocation() {
@@ -225,39 +176,99 @@ class Robot {
     }
   }
 
-  private _checkRessources(
-    errorMessageBeginning: string,
-    neededRessources: NeededRessources
-  ) {
-    const enoughRessources =
-      this.store.getFoobarsAmount() >= neededRessources.foobars &&
-      this.store.getFoosAmount() >= neededRessources.foos &&
-      this.store.getBarsAmount() >= neededRessources.bars;
-    if (!enoughRessources) {
-      throw new Error(
-        `${errorMessageBeginning}.
-        There are only ${this.store.getFoosAmount()} foos, ${this.store.getBarsAmount()} bars and ${this.store.getFoobarsAmount()} foobars.`
-      );
-    }
+  /**
+   * Starts an action on the current location if the robot isn't doing anything.
+   */
+  startLocationRelatedAction(currentTime: number) {
+    const action = this._checksForLocationRelatedAction();
+    this._consumeNeededRessources(action);
+    this.setAction(action);
+    this.actionStartTime = currentTime;
   }
 
-  private checkAvailable() {
+  private _checksForLocationRelatedAction(): Action {
+    this._checkAvailable();
+    const action = this._checkLocationForAction();
+    if (action.neededressources) {
+      this._checkRessources(action.neededressources);
+    }
+    return action;
+  }
+
+  private _checkAvailable() {
     if (!this.isAvailable()) {
       throw new Error(`The robot is not available yet`);
     }
   }
 
+  private _checkLocationForAction(): Action {
+    let action;
+    switch (this.location) {
+      case Location.FOO_MINE:
+        action = MINING_FOO;
+        break;
+      case Location.BAR_MINE:
+        action = MINING_BAR;
+        break;
+      case Location.ASSEMBLING_FACTORY:
+        action = ASSEMBLING;
+        break;
+      case Location.SHOP:
+        action = BUYING_ROBOT;
+        break;
+      default:
+        throw new Error(
+          `The current location (${this.location}) does not allow location related actions.`
+        );
+    }
+    return action;
+  }
+
+  private _checkRessources(neededRessources: NeededRessources) {
+    const enoughFoos = neededRessources?.foos
+      ? this.store.getFoosAmount() >= neededRessources.foos
+      : true;
+    const enoughBars = neededRessources?.bars
+      ? this.store.getBarsAmount() >= neededRessources.bars
+      : true;
+    const enoughFoobars = neededRessources?.foobars
+      ? this.store.getFoobarsAmount() >= neededRessources.foobars
+      : true;
+    const enoughRobots = neededRessources?.robots
+      ? this.store.getRobots().length >= neededRessources.robots
+      : true;
+    const enoughRessources =
+      enoughFoos && enoughBars && enoughFoobars && enoughRobots;
+    if (!enoughRessources) {
+      throw new Error(
+        `${neededRessources.errorMessage}.
+        There are only ${this.store.getFoosAmount()} foos,
+        ${this.store.getBarsAmount()} bars,
+        ${this.store.getFoobarsAmount()} foobars 
+        and ${this.store.getRobots().length} robots.`
+      );
+    }
+  }
+
+  private _consumeNeededRessources(action: Action) {
+    this._consumeRessources(action?.neededressources, (value) => -value);
+  }
+
+  subscribe(information: ObservedRobot, callback: Function) {
+    this.observable.subscribe(information, callback);
+  }
+
   canAssemble(): boolean {
-    return this._canDoAction(ASSEMBLING_NEEDED_RESSOURCES);
+    return this._canDoAction(ASSEMBLING.neededressources);
   }
 
   canBuyRobot(): boolean {
-    return this._canDoAction(BUYING_ROBOT_NEEDED_RESSOURCES);
+    return this._canDoAction(BUYING_ROBOT.neededressources);
   }
 
-  private _canDoAction(neededRessources: NeededRessources) {
+  private _canDoAction(neededRessources?: NeededRessources) {
     try {
-      this._checkRessources("", neededRessources);
+      neededRessources && this._checkRessources(neededRessources);
     } catch {
       return false;
     }
@@ -270,10 +281,6 @@ class Robot {
    */
   isAvailable(): boolean {
     return this.action === WAITING;
-  }
-
-  subscribe(information: ObservedRobot, callback: Function) {
-    this.observable.subscribe(information, callback);
   }
 
   /**
@@ -293,12 +300,7 @@ class Robot {
     return this.nextLocation;
   }
 
-  getLocation() {
-    return this.location;
-  }
-
   setLocation(location: Location) {
-    this.previousLocation = this.location;
     this.location = location;
     const locations: Location[] = [];
     this.store.getRobots().forEach((robot) => {
@@ -307,8 +309,8 @@ class Robot {
     this.observable.trigger(ObservedRobot.ROBOT_LOCATION, locations);
   }
 
-  getAction() {
-    return this.action;
+  getLocation() {
+    return this.location;
   }
 
   setAction(action: Action) {
@@ -326,10 +328,6 @@ class Robot {
 
   getKeepLocation() {
     return this.keepLocation;
-  }
-
-  getPreviousLocation() {
-    return this.previousLocation;
   }
 }
 

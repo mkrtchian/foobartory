@@ -1,13 +1,16 @@
 import { MOVING, WAITING } from "./actions";
+import Location from "./locations";
 import { RandomGenerator, RealRandomGenerator } from "./RandomGenerator";
-import { Location, Robot } from "./Robot";
+import { Robot } from "./Robot";
 import { Store } from "./Store";
 
 const INITIAL_MOVEMENT_PROBABILITY = 50;
-const INITIAL_FOO_MINE_WEIGHT = 50;
-const INITIAL_BAR_MINE_WEIGHT = 50;
-const INITIAL_ASSEMBLING_FACTORY_WEIGHT = 50;
-const INITIAL_SHOP_WEIGHT = 50;
+const INITIAL_WEIGHTS = {
+  fooMine: 50,
+  barMine: 50,
+  assemblingFactory: 50,
+  shop: 50,
+} as const;
 
 interface Strategy {
   actOnOneFrame(currentTime: number, store: Store): void;
@@ -39,10 +42,10 @@ class BasicStrategy implements Strategy {
       : new RealRandomGenerator();
     this.automaticMovementProbability = INITIAL_MOVEMENT_PROBABILITY;
     this.automaticLocationWeights = new Map([
-      [Location.FOO_MINE, INITIAL_FOO_MINE_WEIGHT],
-      [Location.BAR_MINE, INITIAL_BAR_MINE_WEIGHT],
-      [Location.ASSEMBLING_FACTORY, INITIAL_ASSEMBLING_FACTORY_WEIGHT],
-      [Location.SHOP, INITIAL_SHOP_WEIGHT],
+      [Location.FOO_MINE, INITIAL_WEIGHTS.fooMine],
+      [Location.BAR_MINE, INITIAL_WEIGHTS.barMine],
+      [Location.ASSEMBLING_FACTORY, INITIAL_WEIGHTS.assemblingFactory],
+      [Location.SHOP, INITIAL_WEIGHTS.shop],
     ]);
   }
 
@@ -135,11 +138,11 @@ class BasicStrategy implements Strategy {
     switch (robot.getLocation()) {
       case Location.FOO_MINE:
       case Location.BAR_MINE:
-        robot.startMining(currentTime);
+        robot.startLocationRelatedAction(currentTime);
         break;
       case Location.ASSEMBLING_FACTORY:
         if (robot.canAssemble()) {
-          robot.startAssembling(currentTime);
+          robot.startLocationRelatedAction(currentTime);
         } else {
           robot.setAction(WAITING);
           robot.setLocation(robot.getLocation());
@@ -147,7 +150,7 @@ class BasicStrategy implements Strategy {
         break;
       case Location.SHOP:
         if (robot.canBuyRobot()) {
-          robot.startBuyingRobot(currentTime);
+          robot.startLocationRelatedAction(currentTime);
         } else {
           robot.setAction(WAITING);
           robot.setLocation(robot.getLocation());
@@ -161,12 +164,5 @@ class BasicStrategy implements Strategy {
   }
 }
 
-export {
-  BasicStrategy,
-  INITIAL_MOVEMENT_PROBABILITY,
-  INITIAL_FOO_MINE_WEIGHT,
-  INITIAL_BAR_MINE_WEIGHT,
-  INITIAL_ASSEMBLING_FACTORY_WEIGHT,
-  INITIAL_SHOP_WEIGHT,
-};
+export { BasicStrategy, INITIAL_MOVEMENT_PROBABILITY, INITIAL_WEIGHTS };
 export type { Strategy };
