@@ -3,18 +3,18 @@
     "main.css": "/foobartory/static/css/main.ea1cfff3.chunk.css",
     "main.js": "/foobartory/static/js/main.f88b740c.chunk.js",
     "main.js.map": "/foobartory/static/js/main.f88b740c.chunk.js.map",
-    "runtime-main.js": "/foobartory/static/js/runtime-main.88f3b8bc.js",
-    "runtime-main.js.map": "/foobartory/static/js/runtime-main.88f3b8bc.js.map",
+    "runtime-main.js": "/foobartory/static/js/runtime-main.836d175b.js",
+    "runtime-main.js.map": "/foobartory/static/js/runtime-main.836d175b.js.map",
     "static/js/2.8ae757d4.chunk.js": "/foobartory/static/js/2.8ae757d4.chunk.js",
     "static/js/2.8ae757d4.chunk.js.map": "/foobartory/static/js/2.8ae757d4.chunk.js.map",
-    "static/js/3.1a8ed01f.chunk.js": "/foobartory/static/js/3.1a8ed01f.chunk.js",
-    "static/js/3.1a8ed01f.chunk.js.map": "/foobartory/static/js/3.1a8ed01f.chunk.js.map",
+    "static/js/3.b73170d1.chunk.js": "/foobartory/static/js/3.b73170d1.chunk.js",
+    "static/js/3.b73170d1.chunk.js.map": "/foobartory/static/js/3.b73170d1.chunk.js.map",
     "index.html": "/foobartory/index.html",
     "static/css/main.ea1cfff3.chunk.css.map": "/foobartory/static/css/main.ea1cfff3.chunk.css.map",
     "static/js/2.8ae757d4.chunk.js.LICENSE.txt": "/foobartory/static/js/2.8ae757d4.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.88f3b8bc.js",
+    "static/js/runtime-main.836d175b.js",
     "static/js/2.8ae757d4.chunk.js",
     "static/css/main.ea1cfff3.chunk.css",
     "static/js/main.f88b740c.chunk.js"
