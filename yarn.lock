@@ -1091,7 +1091,7 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
-"@babel/runtime@^7.10.2", "@babel/runtime@^7.11.2", "@babel/runtime@^7.12.5", "@babel/runtime@^7.13.10", "@babel/runtime@^7.14.8", "@babel/runtime@^7.3.1", "@babel/runtime@^7.4.4", "@babel/runtime@^7.5.5", "@babel/runtime@^7.7.2", "@babel/runtime@^7.8.3", "@babel/runtime@^7.8.4", "@babel/runtime@^7.8.7", "@babel/runtime@^7.9.2":
+"@babel/runtime@^7.10.2", "@babel/runtime@^7.11.2", "@babel/runtime@^7.12.5", "@babel/runtime@^7.13.10", "@babel/runtime@^7.14.8", "@babel/runtime@^7.3.1", "@babel/runtime@^7.5.5", "@babel/runtime@^7.7.2", "@babel/runtime@^7.8.3", "@babel/runtime@^7.8.4", "@babel/runtime@^7.8.7", "@babel/runtime@^7.9.2":
   version "7.15.3"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.15.3.tgz#2e1c2880ca118e5b2f9988322bd8a7656a32502b"
   integrity sha512-OvwMLqNXkCXSz1kSm58sEsNuhqOx/fKpnUnKnFB5v8uDda5bLNEHNgKPvhDN6IU0LDcnHQ90LlJ0Q6jnyBSIBA==
@@ -1520,15 +1520,6 @@
     react-is "^17.0.0"
     react-transition-group "^4.4.0"
 
-"@material-ui/private-theming@5.0.0-beta.1":
-  version "5.0.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@material-ui/private-theming/-/private-theming-5.0.0-beta.1.tgz#fd56a7fda7bc9f0a49c4c0acb8c2a98f4d99e9f6"
-  integrity sha512-iilGWRRlLX2DOXz06SIanhiMVBgMAZivxyBC3mPOOSjH0P7jQ6hVOvgoUdXzt9h54Y1gZkdUPzUe+iMTd+zKRw==
-  dependencies:
-    "@babel/runtime" "^7.4.4"
-    "@material-ui/utils" "5.0.0-beta.0"
-    prop-types "^15.7.2"
-
 "@material-ui/private-theming@5.0.0-beta.4":
   version "5.0.0-beta.4"
   resolved "https://registry.yarnpkg.com/@material-ui/private-theming/-/private-theming-5.0.0-beta.4.tgz#a7d767a9f780494af44c4bb69a77ae1f37993116"
@@ -1547,16 +1538,16 @@
     "@emotion/cache" "^11.0.0"
     prop-types "^15.7.2"
 
-"@material-ui/styles@^5.0.0-beta.1":
-  version "5.0.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@material-ui/styles/-/styles-5.0.0-beta.1.tgz#fb3b37a5297f923f7a510f1c50960f1a7900ac1d"
-  integrity sha512-4DjBoDoOVzL/3klydR24ASYoPr191iN0K8xdBmM0bHtFsAjXNBEv0laXlRXRhGzhVwtLTJqMRAnyfJXOc8S2JQ==
+"@material-ui/styles@^5.0.0-beta.4":
+  version "5.0.0-beta.4"
+  resolved "https://registry.yarnpkg.com/@material-ui/styles/-/styles-5.0.0-beta.4.tgz#7694325f6bfae651158aaa721dc1634ee8306c79"
+  integrity sha512-B3l6dMo0AXvRg9Cfw2Wl88ToRimSD3FInrrCYoYJr9OJRxzlKKDZOdOlAjiqRilkS4vCWVt2KO6IP2V+TFbsZQ==
   dependencies:
-    "@babel/runtime" "^7.4.4"
+    "@babel/runtime" "^7.14.8"
     "@emotion/hash" "^0.8.0"
-    "@material-ui/private-theming" "5.0.0-beta.1"
-    "@material-ui/types" "6.0.1"
-    "@material-ui/utils" "5.0.0-beta.0"
+    "@material-ui/private-theming" "5.0.0-beta.4"
+    "@material-ui/types" "6.0.2"
+    "@material-ui/utils" "5.0.0-beta.4"
     clsx "^1.0.4"
     csstype "^3.0.2"
     hoist-non-react-statics "^3.3.2"
@@ -1584,11 +1575,6 @@
     csstype "^3.0.2"
     prop-types "^15.7.2"
 
-"@material-ui/types@6.0.1":
-  version "6.0.1"
-  resolved "https://registry.yarnpkg.com/@material-ui/types/-/types-6.0.1.tgz#bfcdcd3bb5091e5feac2b191db516543d84e26af"
-  integrity sha512-t53C2BZE59e8ao38EDIZdM2smPDSEo5Xx9XxQ/MNM9Ph63Mu4vj5pmECiXkYp0y2OrvFiiZhcqRWV34SBOA18g==
-
 "@material-ui/types@6.0.2":
   version "6.0.2"
   resolved "https://registry.yarnpkg.com/@material-ui/types/-/types-6.0.2.tgz#a6d384196c6e2e130eb2765b62d944c0b1ea1015"
@@ -1603,17 +1589,6 @@
     "@emotion/is-prop-valid" "^1.1.0"
     "@material-ui/utils" "5.0.0-beta.4"
     clsx "^1.0.4"
-    prop-types "^15.7.2"
-    react-is "^17.0.0"
-
-"@material-ui/utils@5.0.0-beta.0":
-  version "5.0.0-beta.0"
-  resolved "https://registry.yarnpkg.com/@material-ui/utils/-/utils-5.0.0-beta.0.tgz#2b2083b356a98618de73c9bd29f271f9143a07a2"
-  integrity sha512-eBBqd+53NBUCgTU6TFGlhN0GsAPmnrHwdVBW6y4t/jP6sEXgDjVaJm5FKSYKkkCl+iRfZEAfdYyCeAn04eummw==
-  dependencies:
-    "@babel/runtime" "^7.4.4"
-    "@types/prop-types" "^15.7.3"
-    "@types/react-is" "^16.7.1 || ^17.0.0"
     prop-types "^15.7.2"
     react-is "^17.0.0"
 
