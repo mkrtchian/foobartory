@@ -123,8 +123,9 @@ class BasicStrategy implements Strategy {
         this.randomGenerator.chooseValue(possibleLocations);
       robot.setNextLocation(chosenLocation);
       robot.startMoving(currentTime);
-    } catch (exception) {
+    } catch (exception: unknown) {
       if (
+        exception instanceof Error &&
         exception.message.includes("At least one of the weights has to be > 0")
       ) {
         // in case of wrong weights (eg. (0, 0, 0)), we just don't move
