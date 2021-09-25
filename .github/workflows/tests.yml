@@ -24,12 +24,16 @@ jobs:
         run: yarn lint
         env:
           CI: true
+      - name: Run typescript
+        run: yarn type
+        env:
+          CI: true
       - name: Run unit tests
         run: yarn test
         env:
           CI: true
           INTEGRATION_TESTING: true
-      - name: Run build to spot typescript errors
+      - name: Run build to make sure it doesn't crash
         run: yarn build
         env:
           CI: true

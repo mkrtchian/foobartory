@@ -33,6 +33,7 @@ To run the linter and the tests:
 
 ```bash
 yarn lint
+yarn type
 yarn test
 ```
 
