@@ -26,6 +26,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "lint": "eslint --max-warnings=0 .",
+    "type": "tsc",
     "predeploy": "yarn build && touch build/.nojekyll",
     "deploy": "gh-pages -d build",
     "eject": "react-scripts eject"
