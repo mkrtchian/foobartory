@@ -71,6 +71,9 @@ const MovingLabel = styled.span`
   bottom: -2rem;
   left: calc(50% - 2rem);
 `;
+const RobotNumber = styled.span`
+  margin-bottom: -30%;
+`;
 
 /**
  * Display a high level graphical view of robots current and next locations.
@@ -85,7 +88,7 @@ function RobotsLocations() {
     .reduce(function amountWithNextLocation(accumulator, robot) {
       return robot.getNextLocation() ? accumulator + 1 : accumulator;
     }, 0);
-  const circleSizeFactor = 7;
+  const circleSizeFactor = 7.5;
   const arrowSizeFactor = 8;
   function computeCircleSize(location: Location) {
     const robotsInlocation = robotsAmountByLocation.get(location);
@@ -112,7 +115,9 @@ function RobotsLocations() {
       <li>
         <FooLabel>Foo mine</FooLabel>
         <FooCircle size={computeCircleSize(Location.FOO_MINE)}>
-          {robotsAmountByLocation.get(Location.FOO_MINE)}
+          <RobotNumber>
+            {robotsAmountByLocation.get(Location.FOO_MINE)}
+          </RobotNumber>
         </FooCircle>
         <FooArrow
           size={computeArrowSize(Location.FOO_MINE)}
@@ -122,7 +127,9 @@ function RobotsLocations() {
       <li>
         <BarLabel>Bar mine</BarLabel>
         <BarCircle size={computeCircleSize(Location.BAR_MINE)}>
-          {robotsAmountByLocation.get(Location.BAR_MINE)}
+          <RobotNumber>
+            {robotsAmountByLocation.get(Location.BAR_MINE)}
+          </RobotNumber>
         </BarCircle>
         <BarArrow
           size={computeArrowSize(Location.BAR_MINE)}
@@ -132,7 +139,9 @@ function RobotsLocations() {
       <li>
         <FactoryLabel>Assembling factory</FactoryLabel>
         <FactoryCircle size={computeCircleSize(Location.ASSEMBLING_FACTORY)}>
-          {robotsAmountByLocation.get(Location.ASSEMBLING_FACTORY)}
+          <RobotNumber>
+            {robotsAmountByLocation.get(Location.ASSEMBLING_FACTORY)}
+          </RobotNumber>
         </FactoryCircle>
         <FactoryArrow
           size={computeArrowSize(Location.ASSEMBLING_FACTORY)}
@@ -146,7 +155,7 @@ function RobotsLocations() {
       <li>
         <ShopLabel>Shop</ShopLabel>
         <ShopCircle size={computeCircleSize(Location.SHOP)}>
-          {robotsAmountByLocation.get(Location.SHOP)}
+          <RobotNumber>{robotsAmountByLocation.get(Location.SHOP)}</RobotNumber>
         </ShopCircle>
         <ShopArrow
           size={computeArrowSize(Location.SHOP)}
@@ -156,7 +165,9 @@ function RobotsLocations() {
       <li>
         <MovingCircle size={computeCircleSize(Location.TRANSITION)}>
           <MovingLabel>Moving</MovingLabel>
-          {robotsAmountByLocation.get(Location.TRANSITION)}
+          <RobotNumber>
+            {robotsAmountByLocation.get(Location.TRANSITION)}
+          </RobotNumber>
         </MovingCircle>
       </li>
     </MainSquare>
