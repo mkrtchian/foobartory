@@ -1,10 +1,11 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
+import robotImage from "./robot.svg";
 
 // these factors mulpitply the circles' size for smaller viewports
 const SMALL_RESPONSIVE_FACTOR = 1.6;
 const MEDIUM_RESPONSIVE_FACTOR = 1.3;
-const FONT_FACTOR = 1.5;
+const FONT_FACTOR = 2.3;
 
 type CircleProps = {
   size: number;
@@ -19,13 +20,15 @@ type SpecificCircleProps = {
 
 const circle = css`
   position: absolute;
-  border-radius: 50%;
   transition: all 0.3s ease;
   transition-property: width, height, top, left, font-size;
-  background-color: #333;
   color: #eee;
   display: grid;
   place-content: center;
+  /* SVG robot By Simon Sim, SG from the Noun Project */
+  background-image: url(${robotImage});
+  background-position: 50% 50%;
+  background-size: 130%;
 `;
 
 function FooCircle({ size, children }: SpecificCircleProps) {
