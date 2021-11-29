@@ -5,18 +5,18 @@
     "main.js.map": "/foobartory/static/js/main.db925afc.chunk.js.map",
     "runtime-main.js": "/foobartory/static/js/runtime-main.280e189e.js",
     "runtime-main.js.map": "/foobartory/static/js/runtime-main.280e189e.js.map",
-    "static/js/2.7ba057cf.chunk.js": "/foobartory/static/js/2.7ba057cf.chunk.js",
-    "static/js/2.7ba057cf.chunk.js.map": "/foobartory/static/js/2.7ba057cf.chunk.js.map",
+    "static/js/2.d38c957e.chunk.js": "/foobartory/static/js/2.d38c957e.chunk.js",
+    "static/js/2.d38c957e.chunk.js.map": "/foobartory/static/js/2.d38c957e.chunk.js.map",
     "static/js/3.daa6e9d1.chunk.js": "/foobartory/static/js/3.daa6e9d1.chunk.js",
     "static/js/3.daa6e9d1.chunk.js.map": "/foobartory/static/js/3.daa6e9d1.chunk.js.map",
     "index.html": "/foobartory/index.html",
     "static/css/main.ea1cfff3.chunk.css.map": "/foobartory/static/css/main.ea1cfff3.chunk.css.map",
-    "static/js/2.7ba057cf.chunk.js.LICENSE.txt": "/foobartory/static/js/2.7ba057cf.chunk.js.LICENSE.txt",
+    "static/js/2.d38c957e.chunk.js.LICENSE.txt": "/foobartory/static/js/2.d38c957e.chunk.js.LICENSE.txt",
     "static/media/robot.a1a430ec.svg": "/foobartory/static/media/robot.a1a430ec.svg"
   },
   "entrypoints": [
     "static/js/runtime-main.280e189e.js",
-    "static/js/2.7ba057cf.chunk.js",
+    "static/js/2.d38c957e.chunk.js",
     "static/css/main.ea1cfff3.chunk.css",
     "static/js/main.db925afc.chunk.js"
   ]
