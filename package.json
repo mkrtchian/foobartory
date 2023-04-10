@@ -54,7 +54,7 @@
     "@emotion/babel-plugin": "^11.10.2",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-jest-dom": "^4.0.3",
-    "gh-pages": "^4.0.0",
+    "gh-pages": "^5.0.0",
     "husky": "^8.0.3",
     "lint-staged": "^13.2.1",
     "prettier": "^2.8.7",
