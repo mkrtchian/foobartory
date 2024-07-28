@@ -1,5 +1,6 @@
 import { render } from "@testing-library/react";
-import { act } from "react-dom/test-utils";
+import "@testing-library/jest-dom";
+import { act } from "react";
 import { BasicStrategy, Game } from "../../../domain";
 import { Robot } from "../../../domain/Robot";
 import GameContext from "../../contexts/game";
